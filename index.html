@@ -144,7 +144,7 @@ Umesahau neno siri?
 <div id="currentUserRole" class="inline-flex mt-0.5 px-2 py-0.5 rounded-full bg-white/15 text-white text-[11px] font-bold truncate max-w-full">Wadhifa: -</div>
 </div>
 <button type="button" onclick="logout()"
- class="bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg text-sm font-bold">Toka</button>
+ class="bg-red-600 hover:bg-red-700 px-2 py-1.5 rounded-md text-xs font-bold whitespace-nowrap">Toka</button>
 </div>
 </div>
 </div>
@@ -308,7 +308,7 @@ Umesahau neno siri?
 <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="text-left p-3">Tarehe</th><th class="text-left p-3">Mwanafamilia</th><th class="text-left p-3">Aina ya Maafa</th><th class="text-left p-3">Maelezo</th><th class="text-right p-3">Msaada</th><th class="text-left p-3">Hali</th><th class="text-right p-3">Vitendo</th></tr></thead><tbody id="disasterTable"></tbody></table></div></div>
 </section>
 
-<div id="disasterModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-2xl w-full max-w-2xl p-5 max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Rekodi Msaada wa Maafa</h3><button onclick="closeDisasterModal()" class="text-2xl">&times;</button></div><form onsubmit="saveDisaster(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3"><input id="disasterId" type="hidden"><div class="sm:col-span-2"><label class="text-sm font-semibold">Mwanafamilia aliyeathirika</label><select id="disasterMember" required class="w-full border rounded-lg px-3 py-2"><option value="">Chagua mwanafamilia</option></select></div><div><label class="text-sm font-semibold">Tarehe ya tukio</label><input id="disasterIncidentDate" type="date" required class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-sm font-semibold">Tarehe ya msaada</label><input id="disasterAssistanceDate" type="date" required class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-sm font-semibold">Aina ya maafa</label><input id="disasterType" required class="w-full border rounded-lg px-3 py-2" placeholder="Mfano: Msiba, Moto, Ajali"></div><div><label class="text-sm font-semibold">Kiasi (TZS)</label><input id="disasterAmount" type="number" min="1" step="0.01" required class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-sm font-semibold">Namba ya risiti</label><input id="disasterReceipt" class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-sm font-semibold">Hali</label><select id="disasterStatus" class="w-full border rounded-lg px-3 py-2"><option>Imetolewa</option><option>Inasubiri</option><option>Imeghairiwa</option></select></div><div><label class="text-sm font-semibold">Hali ya Idhini</label><select id="disasterApprovalStatus" class="w-full border rounded-lg px-3 py-2"><option>Inasubiri</option><option>Imeidhinishwa</option><option>Imekataliwa</option></select></div>
+<div id="disasterModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-2xl w-full max-w-2xl p-5 max-h-[90vh] overflow-y-auto"><div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">Rekodi Msaada wa Maafa</h3><button onclick="closeDisasterModal()" class="text-2xl">&times;</button></div><form onsubmit="saveDisaster(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3"><input id="disasterId" type="hidden"><div class="sm:col-span-2"><label class="text-sm font-semibold">Mwanafamilia aliyeathirika</label><select id="disasterMember" required class="w-full border rounded-lg px-3 py-2"><option value="">Chagua mwanafamilia</option></select></div><div><label class="text-sm font-semibold">Tarehe ya tukio</label><input id="disasterIncidentDate" type="date" required class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-sm font-semibold">Tarehe ya msaada</label><input id="disasterAssistanceDate" type="date" required class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-sm font-semibold">Aina ya maafa</label><input id="disasterType" required class="w-full border rounded-lg px-3 py-2" placeholder="Mfano: Msiba, Moto, Ajali"></div><div><label class="text-sm font-semibold">Kiasi (TZS)</label><input id="disasterAmount" type="number" min="1" step="0.01" required class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-sm font-semibold">Namba ya risiti</label><input id="disasterReceipt" class="w-full border rounded-lg px-3 py-2"></div><div><label class="text-sm font-semibold">Hali</label><select id="disasterStatus" disabled class="w-full border rounded-lg px-3 py-2 bg-slate-100"><option>Inasubiri</option><option>Imetolewa</option><option>Imeghairiwa</option></select></div><div><label class="text-sm font-semibold">Hali ya Idhini</label><select id="disasterApprovalStatus" disabled class="w-full border rounded-lg px-3 py-2 bg-slate-100"><option>Inasubiri</option><option>Imeidhinishwa</option><option>Imekataliwa</option></select></div>
 <div><label class="text-sm font-semibold">Maelezo ya Idhini</label><input id="disasterApprovalNotes" class="w-full border rounded-lg px-3 py-2" placeholder="Maelezo ya uamuzi"></div>
 <div><label class="text-sm font-semibold">Hali ya Malipo</label><input id="disasterPaymentStatusDisplay" readonly class="w-full border rounded-lg px-3 py-2 bg-slate-50" value="Haijalipwa"></div>
 <div class="sm:col-span-2"><label class="text-sm font-semibold">Maelezo</label><textarea id="disasterDescription" class="w-full border rounded-lg px-3 py-2"></textarea></div><div class="sm:col-span-2"><label class="text-sm font-semibold">Maelezo ya ziada</label><textarea id="disasterNotes" class="w-full border rounded-lg px-3 py-2"></textarea></div><div class="sm:col-span-2 flex gap-2 pt-2"><button type="submit" class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-bold">Hifadhi</button><button type="button" onclick="closeDisasterModal()" class="flex-1 bg-slate-200 px-4 py-2 rounded-lg font-bold">Ghairi</button></div></form></div></div>
@@ -322,7 +322,7 @@ Umesahau neno siri?
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
 <div><label class="text-sm font-semibold">Kuanzia</label><input id="reportFrom" type="date" class="w-full border rounded-lg px-3 py-2 mt-1"></div>
 <div><label class="text-sm font-semibold">Hadi</label><input id="reportTo" type="date" class="w-full border rounded-lg px-3 py-2 mt-1"></div>
-<div class="flex items-end gap-2 flex-wrap"><button onclick="loadReports()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold">Changanua</button><button onclick="exportReportCSV()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold">CSV</button><button onclick="printReport()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold">Chapisha</button></div>
+<div class="flex items-end gap-2 flex-wrap"><button onclick="loadReports()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold">Changanua</button><button onclick="clearReportFilters()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded-lg font-bold">Ondoa Tarehe</button><button onclick="exportReportCSV()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold">CSV</button><button onclick="printReport()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold">Chapisha</button></div>
 </div></div>
 <div id="reportSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5"></div>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -488,10 +488,16 @@ Umesahau neno siri?
 <label class="text-sm text-slate-500">Role</label>
 <div id="accountRole" class="font-semibold mt-1"></div>
 </div>
+<div class="flex flex-col sm:flex-row gap-3">
+<button type="button" onclick="showEditProfile()"
+ class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-3 rounded-lg font-bold">
+Hariri Taarifa
+</button>
 <button type="button" onclick="showChangePassword()"
  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-bold">
 Badili Neno Siri
 </button>
+</div>
 </div>
 </div>
 </section>
@@ -605,9 +611,9 @@ Hifadhi Mchango
 <label class="block text-sm font-semibold mb-1">Barua pepe</label>
 <input id="newUserEmail" type="email" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="email">
 <label class="block text-sm font-semibold mb-1">Neno siri la mtumiaji</label>
-<input id="newUserPassword" type="password" minlength="8" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="new-password">
+<input id="newUserPassword" type="password" minlength="12" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="new-password">
 <label class="block text-sm font-semibold mb-1">Thibitisha neno siri</label>
-<input id="newUserPasswordConfirm" type="password" minlength="8" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="new-password">
+<input id="newUserPasswordConfirm" type="password" minlength="12" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="new-password">
 <label class="block text-sm font-semibold mb-1">Cheo / Role</label>
 <select id="newUserRole" class="w-full border rounded-lg px-3 py-3 mb-5">
 <option value="Mwenyekiti">Mwenyekiti</option>
@@ -629,10 +635,29 @@ Hifadhi Mchango
 <p id="adminResetPasswordUser" class="text-sm text-slate-500 mb-4"></p>
 <input id="adminResetPasswordUserId" type="hidden">
 <label class="block text-sm font-semibold mb-1">Neno siri jipya</label>
-<input id="adminResetPassword" type="password" minlength="8" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="new-password">
+<input id="adminResetPassword" type="password" minlength="12" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="new-password">
 <label class="block text-sm font-semibold mb-1">Thibitisha neno siri</label>
-<input id="adminResetPasswordConfirm" type="password" minlength="8" class="w-full border rounded-lg px-3 py-3 mb-5" autocomplete="new-password">
+<input id="adminResetPasswordConfirm" type="password" minlength="12" class="w-full border rounded-lg px-3 py-3 mb-5" autocomplete="new-password">
 <button id="adminResetPasswordButton" type="button" onclick="adminResetUserPassword()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">Badili Neno Siri</button>
+</div>
+</div>
+
+<div id="editProfileModal" class="hidden fixed inset-0 z-50 modal-bg items-center justify-center p-4">
+<div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+<div class="flex justify-between items-center mb-5">
+<h3 class="text-xl font-bold">Hariri Taarifa Zako</h3>
+<button type="button" onclick="closeEditProfile()" class="text-2xl">×</button>
+</div>
+<p class="text-sm text-slate-500 mb-4">Unaweza kubadilisha jina na namba ya simu. Wadhifa na hali ya akaunti hubadilishwa na Administrator pekee.</p>
+<label class="block text-sm font-semibold mb-1">Jina la kwanza</label>
+<input id="editFirstName" type="text" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="given-name">
+<label class="block text-sm font-semibold mb-1">Jina la kati</label>
+<input id="editMiddleName" type="text" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="additional-name">
+<label class="block text-sm font-semibold mb-1">Jina la mwisho</label>
+<input id="editLastName" type="text" class="w-full border rounded-lg px-3 py-3 mb-4" autocomplete="family-name">
+<label class="block text-sm font-semibold mb-1">Namba ya simu</label>
+<input id="editPhone" type="tel" class="w-full border rounded-lg px-3 py-3 mb-5" autocomplete="tel">
+<button id="editProfileButton" type="button" onclick="saveMyProfile()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">Hifadhi Taarifa</button>
 </div>
 </div>
 
@@ -642,13 +667,35 @@ Hifadhi Mchango
 <h3 class="text-xl font-bold">Badili Neno Siri</h3>
 <button type="button" onclick="closePasswordModal()" class="text-2xl">×</button>
 </div>
+<label class="block text-sm font-semibold mb-1">Neno siri la sasa</label>
+<input id="currentPassword" type="password" autocomplete="current-password" class="w-full border rounded-lg px-3 py-3 mb-4" placeholder="Weka neno siri la sasa">
+<p class="text-xs text-slate-500 -mt-2 mb-4">Kwa usalama, thibitisha neno siri lako la sasa kabla ya kuweka jipya.</p>
+<p class="text-xs text-slate-500 -mt-2 mb-4">Tumia angalau herufi 12, herufi kubwa, herufi ndogo, namba na alama. Urefu wa juu ni herufi 128.</p>
 <label class="block text-sm font-semibold mb-1">Neno siri jipya</label>
-<input id="newPassword" type="password" minlength="8" class="w-full border rounded-lg px-3 py-3 mb-4">
+<input id="newPassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" class="w-full border rounded-lg px-3 py-3 mb-4" placeholder="Angalau herufi 12 + A-Z + a-z + 0-9 + alama">
 <label class="block text-sm font-semibold mb-1">Rudia neno siri</label>
-<input id="newPasswordConfirm" type="password" minlength="8" class="w-full border rounded-lg px-3 py-3 mb-5">
+<input id="newPasswordConfirm" type="password" minlength="12" maxlength="128" autocomplete="new-password" class="w-full border rounded-lg px-3 py-3 mb-5" placeholder="Rudia neno siri jipya">
 <button type="button" onclick="changePassword()"
  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">
 Badili Neno Siri
+</button>
+</div>
+</div>
+
+<div id="recoveryModal" class="hidden fixed inset-0 z-50 modal-bg items-center justify-center p-4">
+<div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+<div class="flex justify-between items-center mb-5">
+<h3 class="text-xl font-bold">Weka Neno Siri Jipya</h3>
+<button type="button" onclick="closeRecoveryPassword()" class="text-2xl">×</button>
+</div>
+<p class="text-sm text-slate-500 mb-4">Link ya kurejesha akaunti imethibitishwa. Weka neno siri jipya hapa.</p>
+<p class="text-xs text-slate-500 -mt-2 mb-4">Tumia angalau herufi 12, herufi kubwa, herufi ndogo, namba na alama. Urefu wa juu ni herufi 128.</p>
+<label class="block text-sm font-semibold mb-1">Neno siri jipya</label>
+<input id="recoveryPassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" class="w-full border rounded-lg px-3 py-3 mb-4" placeholder="Angalau herufi 12 + A-Z + a-z + 0-9 + alama">
+<label class="block text-sm font-semibold mb-1">Rudia neno siri</label>
+<input id="recoveryPasswordConfirm" type="password" minlength="12" maxlength="128" autocomplete="new-password" class="w-full border rounded-lg px-3 py-3 mb-5" placeholder="Rudia neno siri jipya">
+<button id="recoveryPasswordButton" type="button" onclick="completePasswordRecovery()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">
+Weka Neno Siri Jipya
 </button>
 </div>
 </div>
@@ -681,6 +728,11 @@ let familyMembers = [];
 let contributions = [];
 let users = [];
 let contributionTarget = 0;
+let sessionValidationInProgress = false;
+let lastSessionValidationAt = 0;
+let sessionValidationTimer = null;
+const SESSION_VALIDATION_INTERVAL = 5 * 60 * 1000;
+const ALLOWED_ROLES = ["Administrator","Mwenyekiti","Katibu","Mhasibu","Mwanafamilia"];
 
 function money(value){
     return new Intl.NumberFormat("sw-TZ").format(Number(value || 0));
@@ -786,8 +838,7 @@ async function loadApplication(user){
         throw new Error("Profile ya akaunti haijapatikana: "+error.message);
     }
 
-    if(profile.role !== "Administrator" &&
-       !["Mwenyekiti","Katibu","Mhasibu","Mwanafamilia"].includes(profile.role)){
+    if(!ALLOWED_ROLES.includes(profile.role)){
         await supabaseClient.auth.signOut();
         throw new Error("Role ya akaunti haijatambuliwa.");
     }
@@ -822,6 +873,8 @@ async function loadApplication(user){
     if(profile.role==="Administrator"){
         await loadUsers();
     }
+    lastSessionValidationAt=Date.now();
+    startSessionSecurityMonitor();
 }
 
 function applyRolePermissions(){
@@ -933,7 +986,11 @@ function closeSidebar(){
 }
 
 function showPage(page){
-    if((page==="users" || page==="settings" || page==="v23audit") && currentProfile?.role!=="Administrator"){
+    const admin=currentProfile?.role==="Administrator";
+    if((page==="users" || page==="settings" || page==="v23audit") && !admin){
+        page="dashboard";
+    }
+    if(!currentUser || !currentProfile || currentProfile.is_active!==true){
         page="dashboard";
     }
 
@@ -1305,12 +1362,11 @@ async function loadDisasterAssistance(){
  const summary=document.getElementById('disasterSummary'); if(summary) summary.innerHTML=[['Matukio/Misaada',rows.length],['Jumla ya Misaada', 'TZS '+money(rows.reduce((a,x)=>a+Number(x.amount||0),0))],['Imelipwa','TZS '+money(totalPaid)]].map(x=>`<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">${x[0]}</p><p class="text-2xl font-bold mt-2">${x[1]}</p></div>`).join('');
  renderDisasterTable(rows); populateDisasterMembers(); renderPendingApprovals();
 }
-function renderDisasterTable(source=disasterAssistance){const q=(document.getElementById('disasterSearch')?.value||'').toLowerCase().trim();const from=document.getElementById('disasterFrom')?.value||'',to=document.getElementById('disasterTo')?.value||'';const rows=source.filter(x=>(!from||x.assistance_date>=from)&&(!to||x.assistance_date<=to)&&(!q||[x.member_name,x.disaster_type,x.receipt_number,x.description].join(' ').toLowerCase().includes(q)));const t=document.getElementById('disasterTable');if(!t)return;t.innerHTML=rows.length?rows.map(x=>{const canPay=['Administrator','Mhasibu'].includes(currentProfile?.role)&&x.approval_status==='Imeidhinishwa'&&x.payment_status!=='Imelipwa'&&x.status!=='Imeghairiwa';const paymentLabel=x.payment_status==='Imelipwa'?'Imelipwa':'Haijalipwa';return `<tr class="border-t"><td class="p-3">${escapeHtml(x.assistance_date||'-')}</td><td class="p-3">${escapeHtml(x.member_name||'-')}</td><td class="p-3">${escapeHtml(x.disaster_type||'-')}</td><td class="p-3">${escapeHtml(x.description||'-')}</td><td class="p-3 text-right font-bold">TZS ${money(x.amount)}</td><td class="p-3"><span class="font-semibold">${escapeHtml(x.status||'-')}</span><br><span class="text-xs text-slate-500">Idhini: ${escapeHtml(x.approval_status||'Inasubiri')}</span><br><span class="text-xs ${x.payment_status==='Imelipwa'?'text-green-700':'text-amber-700'} font-semibold">Malipo: ${paymentLabel}</span></td><td class="p-3 text-right whitespace-nowrap"><button onclick="editDisaster(${x.id})" class="text-blue-600 font-bold mr-3">Hariri</button>${canPay?`<button onclick="payDisaster(${x.id})" class="text-emerald-600 font-bold mr-3">Lipa</button>`:''}<button onclick="deleteDisaster(${x.id})" class="text-red-600 font-bold">Futa</button></td></tr>`}).join(''):'<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna kumbukumbu za msaada.</td></tr>';}
-
+function renderDisasterTable(source=disasterAssistance){const q=(document.getElementById('disasterSearch')?.value||'').toLowerCase().trim();const from=document.getElementById('disasterFrom')?.value||'',to=document.getElementById('disasterTo')?.value||'';const rows=source.filter(x=>(!from||x.assistance_date>=from)&&(!to||x.assistance_date<=to)&&(!q||[x.member_name,x.disaster_type,x.receipt_number,x.description].join(' ').toLowerCase().includes(q)));const t=document.getElementById('disasterTable');if(!t)return;t.innerHTML=rows.length?rows.map(x=>{const canPay=['Administrator','Mhasibu'].includes(currentProfile?.role)&&x.approval_status==='Imeidhinishwa'&&x.payment_status!=='Imelipwa'&&x.status!=='Imeghairiwa';const canEdit=['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)&&x.approval_status==='Inasubiri'&&x.payment_status!=='Imelipwa';const canDelete=currentProfile?.role==='Administrator';const paymentLabel=x.payment_status==='Imelipwa'?'Imelipwa':'Haijalipwa';return `<tr class="border-t"><td class="p-3">${escapeHtml(x.assistance_date||'-')}</td><td class="p-3">${escapeHtml(x.member_name||'-')}</td><td class="p-3">${escapeHtml(x.disaster_type||'-')}</td><td class="p-3">${escapeHtml(x.description||'-')}</td><td class="p-3 text-right font-bold">TZS ${money(x.amount)}</td><td class="p-3"><span class="font-semibold">${escapeHtml(x.status||'-')}</span><br><span class="text-xs text-slate-500">Idhini: ${escapeHtml(x.approval_status||'Inasubiri')}</span><br><span class="text-xs ${x.payment_status==='Imelipwa'?'text-green-700':'text-amber-700'} font-semibold">Malipo: ${paymentLabel}</span></td><td class="p-3 text-right whitespace-nowrap">${canEdit?`<button onclick="editDisaster(${x.id})" class="text-blue-600 font-bold mr-3">Hariri</button>`:''}${canPay?`<button onclick="payDisaster(${x.id})" class="text-emerald-600 font-bold mr-3">Lipa</button>`:''}${canDelete?`<button onclick="deleteDisaster(${x.id})" class="text-red-600 font-bold">Futa</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna kumbukumbu za msaada.</td></tr>';}
 function populateDisasterMembers(){const s=document.getElementById('disasterMember');if(!s)return;const old=s.value;s.innerHTML='<option value="">Chagua mwanafamilia</option>'+familyMembers.map(m=>`<option value="${m.id}">${escapeHtml(fullName(m))}</option>`).join('');if(old)s.value=old;}
-function openDisasterModal(id=null){if(!['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)){alert('Huna ruhusa ya kurekodi msaada.');return;}populateDisasterMembers();const r=id?disasterAssistance.find(x=>Number(x.id)===Number(id)):null;document.getElementById('disasterId').value=r?.id||'';document.getElementById('disasterMember').value=r?.family_member_id||'';document.getElementById('disasterIncidentDate').value=r?.incident_date||new Date().toISOString().slice(0,10);document.getElementById('disasterAssistanceDate').value=r?.assistance_date||new Date().toISOString().slice(0,10);document.getElementById('disasterType').value=r?.disaster_type||'';document.getElementById('disasterAmount').value=r?.amount||'';document.getElementById('disasterReceipt').value=r?.receipt_number||'';document.getElementById('disasterStatus').value=r?.status||'Inasubiri';document.getElementById('disasterApprovalStatus').value=r?.approval_status||'Inasubiri';document.getElementById('disasterApprovalNotes').value=r?.approval_notes||'';document.getElementById('disasterPaymentStatusDisplay').value=r?.payment_status||'Haijalipwa';document.getElementById('disasterDescription').value=r?.description||'';document.getElementById('disasterNotes').value=r?.notes||'';const m=document.getElementById('disasterModal');m.classList.remove('hidden');m.classList.add('flex');}
+function openDisasterModal(id=null){if(!['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)){alert('Huna ruhusa ya kurekodi au kuhariri msaada.');return;}populateDisasterMembers();const r=id?disasterAssistance.find(x=>Number(x.id)===Number(id)):null;if(r&&(r.approval_status!=='Inasubiri'||r.payment_status==='Imelipwa')){alert('Ombi hili haliwezi kuhaririwa baada ya idhini au malipo.');return;}document.getElementById('disasterId').value=r?.id||'';document.getElementById('disasterMember').value=r?.family_member_id||'';document.getElementById('disasterIncidentDate').value=r?.incident_date||new Date().toISOString().slice(0,10);document.getElementById('disasterAssistanceDate').value=r?.assistance_date||new Date().toISOString().slice(0,10);document.getElementById('disasterType').value=r?.disaster_type||'';document.getElementById('disasterAmount').value=r?.amount||'';document.getElementById('disasterReceipt').value=r?.receipt_number||'';document.getElementById('disasterStatus').value='Inasubiri';document.getElementById('disasterApprovalStatus').value='Inasubiri';document.getElementById('disasterApprovalNotes').value='';document.getElementById('disasterPaymentStatusDisplay').value=r?.payment_status||'Haijalipwa';document.getElementById('disasterDescription').value=r?.description||'';document.getElementById('disasterNotes').value=r?.notes||'';const m=document.getElementById('disasterModal');m.classList.remove('hidden');m.classList.add('flex');}
 function closeDisasterModal(){const m=document.getElementById('disasterModal');m.classList.add('hidden');m.classList.remove('flex');}
-async function saveDisaster(e){e.preventDefault();ensureClient();if(!['Administrator','Mhasibu','Katibu','Mwenyekiti'].includes(currentProfile?.role))return;const id=document.getElementById('disasterId').value;const approval=document.getElementById('disasterApprovalStatus').value;const status=document.getElementById('disasterStatus').value;const payload={family_member_id:Number(document.getElementById('disasterMember').value),incident_date:document.getElementById('disasterIncidentDate').value,assistance_date:document.getElementById('disasterAssistanceDate').value,disaster_type:document.getElementById('disasterType').value.trim(),amount:Number(document.getElementById('disasterAmount').value),receipt_number:document.getElementById('disasterReceipt').value.trim()||null,status,approval_status:approval,approval_notes:document.getElementById('disasterApprovalNotes').value.trim()||null,description:document.getElementById('disasterDescription').value.trim()||null,notes:document.getElementById('disasterNotes').value.trim()||null,updated_by:currentUser?.id};if(currentProfile?.role!=='Mwenyekiti' && approval==='Imeidhinishwa' && !id)payload.approved_by=currentUser?.id;const result=id?await supabaseClient.from('disaster_assistance').update(payload).eq('id',id):await supabaseClient.from('disaster_assistance').insert({...payload,created_by:currentUser?.id});if(result.error){alert('Imeshindikana kuhifadhi: '+result.error.message);return;}closeDisasterModal();await loadDisasterAssistance();}
+async function saveDisaster(e){e.preventDefault();ensureClient();if(!['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)){alert('Huna ruhusa ya kurekodi msaada.');return;}const id=document.getElementById('disasterId').value;const existing=id?disasterAssistance.find(x=>Number(x.id)===Number(id)):null;if(existing&&(existing.approval_status!=='Inasubiri'||existing.payment_status==='Imelipwa')){alert('Ombi hili haliwezi kuhaririwa baada ya idhini au malipo.');return;}const payload={family_member_id:Number(document.getElementById('disasterMember').value),incident_date:document.getElementById('disasterIncidentDate').value,assistance_date:document.getElementById('disasterAssistanceDate').value,disaster_type:document.getElementById('disasterType').value.trim(),amount:Number(document.getElementById('disasterAmount').value),receipt_number:document.getElementById('disasterReceipt').value.trim()||null,status:'Inasubiri',approval_status:'Inasubiri',approval_notes:null,description:document.getElementById('disasterDescription').value.trim()||null,notes:document.getElementById('disasterNotes').value.trim()||null,updated_by:currentUser?.id};const result=id?await supabaseClient.from('disaster_assistance').update(payload).eq('id',id):await supabaseClient.from('disaster_assistance').insert({...payload,created_by:currentUser?.id});if(result.error){alert('Imeshindikana kuhifadhi: '+result.error.message);return;}closeDisasterModal();await loadDisasterAssistance();}
 function renderPendingApprovals(){const panel=document.getElementById('pendingApprovalPanel'),list=document.getElementById('pendingApprovalList');if(!panel||!list)return;const canApprove=['Administrator','Mwenyekiti'].includes(currentProfile?.role);const pending=(disasterAssistance||[]).filter(x=>x.approval_status==='Inasubiri');panel.classList.toggle('hidden',!canApprove||pending.length===0);list.innerHTML=pending.map(x=>`<div class="bg-white rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border"><div><div class="font-bold">${escapeHtml(x.member_name||'-')}</div><div class="text-sm text-slate-600">${escapeHtml(x.disaster_type||'-')} · TZS ${money(x.amount)}</div></div><div class="flex gap-2"><button onclick="approveDisaster(${x.id})" class="bg-emerald-600 text-white px-3 py-2 rounded-lg font-bold">Idhinisha</button><button onclick="rejectDisaster(${x.id})" class="bg-red-600 text-white px-3 py-2 rounded-lg font-bold">Kataa</button></div></div>`).join('');}
 async function decideDisaster(id,decision){if(!['Administrator','Mwenyekiti'].includes(currentProfile?.role)){alert('Mwenyekiti au Administrator ndiye anayeruhusiwa kuidhinisha.');return;}const note=prompt(decision==='Imeidhinishwa'?'Maelezo ya idhini (hiari):':'Sababu ya kukataa:','');if(decision==='Imekataliwa'&&!note){alert('Weka sababu ya kukataa.');return;}const patch={approval_status:decision,approval_notes:note||null,updated_by:currentUser?.id};if(decision==='Imeidhinishwa'){patch.approved_by=currentUser?.id;patch.approved_at=new Date().toISOString();patch.status='Inasubiri';}else{patch.rejected_at=new Date().toISOString();patch.status='Imeghairiwa';}const {data,error}=await supabaseClient.from('disaster_assistance').update(patch).eq('id',id).select().single();if(error){alert(error.message);return;}await loadDisasterAssistance();}
 async function approveDisaster(id){await decideDisaster(id,'Imeidhinishwa');}
@@ -1375,10 +1431,11 @@ async function loadFinanceDashboard(){
   const spent=expenses.reduce((a,r)=>a+Number(r.amount||0),0);
   const disasterSpent=disasterRows.reduce((a,r)=>a+Number(r.amount||0),0);
   if(summary) summary.innerHTML=[
-    ['Michango yote',financeMoney(totalContributions)],
-    ['Matumizi yote',financeMoney(totalExpenses)],
-    ['Misaada iliyolipwa',financeMoney(totalAssistancePaid)],
-    ['Salio halisi la Mfuko',financeMoney(fundBalance)]
+    ['Michango ya kipindi',financeMoney(income)],
+    ['Matumizi ya kipindi',financeMoney(spent)],
+    ['Misaada iliyolipwa kipindi',financeMoney(disasterSpent)],
+    ['Mabadiliko ya fedha ya kipindi',financeMoney(income-spent-disasterSpent)],
+    ['Salio la Mfuko (jumla)',financeMoney(fundBalance)]
   ].map(x=>`<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">${x[0]}</p><p class="text-2xl font-bold mt-2">${x[1]}</p></div>`).join('');
   const cats={};
   expenses.forEach(r=>{const k=(r.category||'Haijaainishwa').trim()||'Haijaainishwa';cats[k]=(cats[k]||0)+Number(r.amount||0);});
@@ -1386,12 +1443,12 @@ async function loadFinanceDashboard(){
   const eb=document.getElementById('expenseBreakdown');
   if(eb) eb.innerHTML=Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="flex justify-between border-b last:border-0 pb-2 mb-2"><span>${escapeHtml(k)}</span><b>${financeMoney(v)}</b></div>`).join('')||'<p class="text-slate-500 text-sm">Hakuna matumizi katika kipindi hiki.</p>';
   const fb=document.getElementById('financeBreakdown');
-  if(fb) fb.innerHTML=`<div class="flex justify-between"><span>Michango yote</span><b>${financeMoney(totalContributions)}</b></div><div class="flex justify-between"><span>Matumizi yote</span><b>${financeMoney(totalExpenses)}</b></div><div class="flex justify-between"><span>Misaada iliyolipwa</span><b>${financeMoney(totalAssistancePaid)}</b></div><div class="flex justify-between border-t pt-3"><span class="font-bold">Salio halisi la mfuko</span><b class="text-lg">${financeMoney(fundBalance)}</b></div><p class="text-xs text-slate-500 pt-2">Kanuni: Michango − Matumizi − Misaada iliyolipwa.</p>`;
+  if(fb) fb.innerHTML=`<div class="flex justify-between"><span>Michango ya kipindi</span><b>${financeMoney(income)}</b></div><div class="flex justify-between"><span>Matumizi ya kipindi</span><b>${financeMoney(spent)}</b></div><div class="flex justify-between"><span>Misaada iliyolipwa kipindi</span><b>${financeMoney(disasterSpent)}</b></div><div class="flex justify-between border-t pt-3"><span class="font-bold">Salio halisi la mfuko</span><b class="text-lg">${financeMoney(fundBalance)}</b></div><p class="text-xs text-slate-500 pt-2">Mchanganuo wa juu unafuata tarehe ulizochagua; salio halisi ni la mfuko kwa ujumla.</p>`;
   const table=document.getElementById('expenseTable');
   if(table) table.innerHTML=expenses.length?expenses.map(r=>`<tr class="border-t"><td class="p-3">${escapeHtml(r.expense_date||'-')}</td><td class="p-3">${escapeHtml(r.category||'-')}</td><td class="p-3">${escapeHtml(r.description||'-')}</td><td class="p-3 text-right font-bold">${financeMoney(r.amount)}</td><td class="p-3 text-right"><button onclick="editExpense(${r.id})" class="text-blue-600 font-bold mr-3">Hariri</button><button onclick="deleteExpense(${r.id})" class="text-red-600 font-bold">Futa</button></td></tr>`).join(''):'<tr><td colspan="5" class="p-6 text-center text-slate-500">Hakuna matumizi yaliyorekodiwa.</td></tr>';
   window.financeExpenses=expenses;
   window.financeDisasterAssistance=disasterRows;
-  window.financePeriodSummary={income,spent,disasterSpent,fundBalance};
+  window.financePeriodSummary={income,spent,disasterSpent,fundBalance,periodNet:income-spent-disasterSpent};
 }
 
 function openExpenseModal(id=null){ if(!['Administrator','Mhasibu'].includes(currentProfile?.role)){alert('Administrator au Mhasibu pekee anaweza kurekodi matumizi.');return;} const m=document.getElementById('expenseModal');m.classList.remove('hidden');m.classList.add('flex'); const r=id?window.financeExpenses?.find(x=>Number(x.id)===Number(id)):null; document.getElementById('expenseId').value=r?.id||''; document.getElementById('expenseDate').value=r?.expense_date||new Date().toISOString().slice(0,10); document.getElementById('expenseCategory').value=r?.category||''; document.getElementById('expenseDescription').value=r?.description||''; document.getElementById('expenseAmount').value=r?.amount||''; document.getElementById('expensePayment').value=r?.payment_method||''; const title=m.querySelector('h3'); if(title) title.textContent=r?'Hariri Matumizi ya Mfuko':'Ongeza Matumizi ya Mfuko'; }
@@ -1541,26 +1598,40 @@ async function loadReports(){
 }
 
 
-function printReport(){
-    if(!window.currentReportRows){ loadReports().then(()=>setTimeout(printReport,250)); return; }
+async function clearReportFilters(){
+    const from=document.getElementById('reportFrom');
+    const to=document.getElementById('reportTo');
+    if(from) from.value='';
+    if(to) to.value='';
+    await loadReports();
+}
+
+async function printReport(){
+    // Always reload using the current date filters so Print cannot use stale data.
+    const rows=await loadReports();
+    if(!Array.isArray(rows)) return;
     const meta=window.currentReportMeta||{};
-    const rows=window.currentReportRows||[];
     const win=window.open('', '_blank', 'width=1000,height=800');
     if(!win){ alert('Ruhusu dirisha la kuchapisha (pop-up) kisha ujaribu tena.'); return; }
-    const period=(meta.from||'')+(meta.to?(' hadi '+meta.to):'');
-    win.document.write(`<!doctype html><html lang="sw"><head><meta charset="utf-8"><title>Ripoti ya Mo'Nyakorema O'Rila</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#111}h1{margin-bottom:4px}p{color:#555}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.card{border:1px solid #ddd;border-radius:8px;padding:12px}.label{font-size:12px;color:#666}.value{font-size:20px;font-weight:bold;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f1f5f9}.money{text-align:right;font-weight:bold}@media print{button{display:none}}</style></head><body><h1>Ripoti ya Mo'Nyakorema O'Rila</h1><p>Kipindi: ${escapeHtml(period||'Vipindi vyote')}</p><div class="cards"><div class="card"><div class="label">Wanafamilia</div><div class="value">${meta.members||0}</div></div><div class="card"><div class="label">Walio hai</div><div class="value">${meta.active||0}</div></div><div class="card"><div class="label">Michango</div><div class="value">${rows.length}</div></div><div class="card"><div class="label">Jumla</div><div class="value">${reportMoney(meta.total||0)}</div></div></div><table><thead><tr><th>Tarehe</th><th>Risiti</th><th>Mchangiaji</th><th>Aina</th><th>Kiasi</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${escapeHtml(r.contribution_date||'-')}</td><td>${escapeHtml(r.receipt_number||'-')}</td><td>${escapeHtml(fullName(r)||'-')}</td><td>${escapeHtml(r.contributor_type||'-')}</td><td class="money">${reportMoney(r.amount)}</td></tr>`).join('')}</tbody></table><p style="margin-top:30px">Imetolewa kutoka kwenye mfumo wa Familia ya Mo'Nyakorema O'Rila.</p></body></html>`);
+    const period=meta.from&&meta.to ? `${meta.from} hadi ${meta.to}` : (meta.from ? `Kuanzia ${meta.from}` : (meta.to ? `Hadi ${meta.to}` : 'Vipindi vyote'));
+    const typeTotals={};
+    rows.forEach(r=>{const k=(r.contributor_type||'Haijaainishwa').trim()||'Haijaainishwa';typeTotals[k]=(typeTotals[k]||0)+Number(r.amount||0);});
+    const typeSummary=Object.entries(typeTotals).map(([k,v])=>`<tr><td>${escapeHtml(k)}</td><td class="money">${reportMoney(v)}</td></tr>`).join('');
+    win.document.write(`<!doctype html><html lang="sw"><head><meta charset="utf-8"><title>Ripoti ya Mo'Nyakorema O'Rila</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#111}h1{margin-bottom:4px}p{color:#555}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.card{border:1px solid #ddd;border-radius:8px;padding:12px}.label{font-size:12px;color:#666}.value{font-size:20px;font-weight:bold;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f1f5f9}.money{text-align:right;font-weight:bold}.section{margin-top:28px}@media print{button{display:none}.section{break-inside:avoid}}</style></head><body><h1>Ripoti ya Mo'Nyakorema O'Rila</h1><p>Kipindi: ${escapeHtml(period)}</p><div class="cards"><div class="card"><div class="label">Wanafamilia wote</div><div class="value">${meta.members||0}</div></div><div class="card"><div class="label">Wanafamilia hai</div><div class="value">${meta.active||0}</div></div><div class="card"><div class="label">Idadi ya michango</div><div class="value">${rows.length}</div></div><div class="card"><div class="label">Jumla ya michango</div><div class="value">${reportMoney(meta.total||0)}</div></div></div><div class="section"><h2>Muhtasari wa Aina za Wachangiaji</h2><table><thead><tr><th>Aina</th><th>Kiasi</th></tr></thead><tbody>${typeSummary||'<tr><td colspan="2">Hakuna data</td></tr>'}</tbody></table></div><div class="section"><h2>Michango ya Kipindi</h2><table><thead><tr><th>Tarehe</th><th>Risiti</th><th>Mchangiaji</th><th>Aina</th><th>Kiasi</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${escapeHtml(r.contribution_date||'-')}</td><td>${escapeHtml(r.receipt_number||'-')}</td><td>${escapeHtml(fullName(r)||r.phone||'-')}</td><td>${escapeHtml(r.contributor_type||'-')}</td><td class="money">${reportMoney(r.amount)}</td></tr>`).join('')||'<tr><td colspan="5">Hakuna michango katika kipindi hiki.</td></tr>'}</tbody></table></div><p style="margin-top:30px">Imetolewa kutoka kwenye mfumo wa Familia ya Mo'Nyakorema O'Rila.</p></body></html>`);
     win.document.close();
     win.focus();
     setTimeout(()=>win.print(),300);
 }
 
-function exportReportCSV(){
-    const rows=window.currentReportRows||[];
-    if(!rows.length){ alert("Hakuna data ya ripoti ya kupakua."); return; }
-    const head=['Tarehe','Risiti','Mchangiaji','Aina','Kiasi','Njia ya malipo'];
-    const lines=[head,...rows.map(r=>[r.contribution_date||'',r.receipt_number||'',fullName(r)||'',r.contributor_type||'',r.amount||0,r.payment_method||''])].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+async function exportReportCSV(){
+    // Always reload using the current date filters so CSV cannot use stale data.
+    const rows=await loadReports();
+    if(!Array.isArray(rows) || !rows.length){ alert("Hakuna data ya ripoti ya kupakua katika kipindi ulichochagua."); return; }
+    const meta=window.currentReportMeta||{};
+    const head=['Tarehe','Risiti','Mchangiaji','Simu','Aina','Kiasi','Njia ya malipo','Reference'];
+    const lines=[head,...rows.map(r=>[r.contribution_date||'',r.receipt_number||'',fullName(r)||'',r.phone||'',r.contributor_type||'',r.amount||0,r.payment_method||'',r.transaction_reference||''])].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
     const blob=new Blob(["\ufeff"+lines.join('\n')],{type:'text/csv;charset=utf-8;'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ripoti-mon-yakorema.csv'; a.click(); URL.revokeObjectURL(a.href);
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`ripoti-mon-yakorema-${meta.from||'mwanzo'}-${meta.to||'leo'}.csv`; a.click(); URL.revokeObjectURL(a.href);
 }
 
 /* =========================================================
@@ -1813,7 +1884,7 @@ async function saveContribution(){
         error=result.error;
     }else{
         const payload={
-            receipt_number:"MNY-"+Date.now(),
+            
             ...fields,
             received_by:currentUser.id,
             created_by:currentUser.id,
@@ -1948,7 +2019,8 @@ async function createUser(){
     const role=document.getElementById("newUserRole").value;
     const allowed=["Administrator","Mwenyekiti","Katibu","Mhasibu","Mwanafamilia"];
     if(!first_name||!last_name||!email){alert("Jina la kwanza, jina la mwisho na email vinahitajika.");return;}
-    if(password.length<8){alert("Neno siri lazima liwe na angalau herufi 8.");return;}
+    const passwordError=validateStrongPassword(password);
+    if(passwordError){alert(passwordError);return;}
     if(password!==confirmPassword){alert("Maneno ya siri hayafanani.");return;}
     if(!allowed.includes(role)){alert("Role si sahihi.");return;}
     const button=document.getElementById("createUserButton");
@@ -2072,7 +2144,7 @@ async function adminResetUserPassword(){
     const target_user_id=document.getElementById("adminResetPasswordUserId").value;
     const password=document.getElementById("adminResetPassword").value;
     const confirmPassword=document.getElementById("adminResetPasswordConfirm").value;
-    if(password.length<8){alert("Neno siri lazima liwe na angalau herufi 8.");return;}
+    const passwordError=validateStrongPassword(password); if(passwordError){alert(passwordError);return;}
     if(password!==confirmPassword){alert("Maneno ya siri hayafanani.");return;}
     const button=document.getElementById("adminResetPasswordButton");
     button.disabled=true; button.textContent="Inabadilisha...";
@@ -2203,13 +2275,88 @@ async function toggleUserStatus(id,newStatus){
     await loadUsers();
 }
 
+function showEditProfile(){
+    if(!currentUser || !currentProfile){
+        alert("Ingia kwanza kwenye akaunti yako.");
+        return;
+    }
+    document.getElementById("editFirstName").value=currentProfile.first_name||"";
+    document.getElementById("editMiddleName").value=currentProfile.middle_name||"";
+    document.getElementById("editLastName").value=currentProfile.last_name||"";
+    document.getElementById("editPhone").value=currentProfile.phone||"";
+    const modal=document.getElementById("editProfileModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    setTimeout(()=>document.getElementById("editFirstName")?.focus(),50);
+}
+
+function closeEditProfile(){
+    const modal=document.getElementById("editProfileModal");
+    if(!modal)return;
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+
+async function saveMyProfile(){
+    ensureClient();
+    if(!currentUser || !currentProfile){
+        alert("Ingia kwanza kwenye akaunti yako.");
+        return;
+    }
+    const firstName=document.getElementById("editFirstName").value.trim();
+    const middleName=document.getElementById("editMiddleName").value.trim();
+    const lastName=document.getElementById("editLastName").value.trim();
+    const phone=document.getElementById("editPhone").value.trim();
+    if(!firstName || !lastName){
+        alert("Jina la kwanza na jina la mwisho vinahitajika.");
+        return;
+    }
+    const button=document.getElementById("editProfileButton");
+    button.disabled=true; button.textContent="Inahifadhi...";
+    try{
+        const {data,error}=await supabaseClient.rpc("update_my_profile",{
+            p_first_name:firstName,
+            p_middle_name:middleName||null,
+            p_last_name:lastName,
+            p_phone:phone||null
+        });
+        if(error) throw error;
+        const profile=Array.isArray(data)?data[0]:data;
+        if(profile){
+            currentProfile=profile;
+            document.getElementById("currentUserName").textContent=fullName(profile)||currentUser.email||"-";
+            document.getElementById("accountName").textContent=fullName(profile)||"-";
+            document.getElementById("accountRole").textContent=profile.role||"-";
+        }
+        closeEditProfile();
+        alert("Taarifa zako zimehifadhiwa kikamilifu.");
+    }catch(error){
+        console.error("saveMyProfile error:",error);
+        alert("Imeshindikana kuhifadhi taarifa: "+(error?.message||"Tafadhali jaribu tena."));
+    }finally{
+        button.disabled=false; button.textContent="Hifadhi Taarifa";
+    }
+}
+
+function validateStrongPassword(password){
+    if(typeof password!=="string" || password.length>128) return "Neno siri haliwezi kuzidi herufi 128.";
+    if(typeof password!=="string" || password.length<12) return "Neno siri lazima liwe na angalau herufi 12.";
+    if(!/[A-Z]/.test(password)) return "Neno siri lazima liwe na angalau herufi moja kubwa (A-Z).";
+    if(!/[a-z]/.test(password)) return "Neno siri lazima liwe na angalau herufi moja ndogo (a-z).";
+    if(!/[0-9]/.test(password)) return "Neno siri lazima liwe na angalau namba moja (0-9).";
+    if(!/[!@#$%^&*()_+\-=\[\]{};':"\\|<>?,./`~]/.test(password)) return "Neno siri lazima liwe na angalau alama moja, mfano ! @ # $.";
+    return "";
+}
+
 function showChangePassword(){
     const modal=document.getElementById("passwordModal");
     if(!modal) return;
+    document.getElementById("currentPassword").value="";
     document.getElementById("newPassword").value="";
     document.getElementById("newPasswordConfirm").value="";
     modal.classList.remove("hidden");
     modal.classList.add("flex");
+    setTimeout(()=>document.getElementById("currentPassword")?.focus(),50);
 }
 
 function closePasswordModal(){
@@ -2227,27 +2374,64 @@ async function changePassword(){
         return;
     }
 
+    const currentPassword=document.getElementById("currentPassword").value;
     const password=document.getElementById("newPassword").value;
     const confirmPassword=document.getElementById("newPasswordConfirm").value;
 
-    if(password.length<8){
-        alert("Neno siri lazima liwe na angalau herufi 8.");
+    if(!currentPassword){
+        alert("Weka neno siri lako la sasa.");
+        return;
+    }
+    const passwordError=validateStrongPassword(password);
+    if(passwordError){
+        alert(passwordError);
         return;
     }
     if(password!==confirmPassword){
-        alert("Maneno ya siri hayafanani.");
+        alert("Maneno ya siri mapya hayafanani.");
+        return;
+    }
+    if(password===currentPassword){
+        alert("Neno siri jipya lazima litofautiane na neno siri la sasa.");
         return;
     }
 
-    const {error}=await supabaseClient.auth.updateUser({password});
-    if(error){
-        alert("Imeshindikana kubadili neno siri: "+error.message);
-        console.error(error);
-        return;
+    const button=document.querySelector('#passwordModal button[onclick="changePassword()"]');
+    if(button){
+        button.disabled=true;
+        button.textContent="Inabadilisha...";
     }
 
-    closePasswordModal();
-    alert("Neno siri limebadilishwa kikamilifu.");
+    try{
+        const email=currentUser.email || (await supabaseClient.auth.getUser()).data?.user?.email;
+        if(!email) throw new Error("Email ya akaunti haijapatikana.");
+
+        // Supabase Auth supports current_password on updateUser for password verification.
+        // The current password is sent only to Supabase Auth and is never logged or stored.
+        const {error}=await supabaseClient.auth.updateUser({
+            password,
+            current_password:currentPassword
+        });
+
+        if(error){
+            console.error("changePassword error:",error);
+            const msg=String(error.message||"");
+            if(/current.?password|invalid.*password|password.*incorrect|wrong.*password/i.test(msg)){
+                throw new Error("Neno siri la sasa si sahihi.");
+            }
+            throw new Error("Imeshindikana kubadili neno siri. Tafadhali jaribu tena.");
+        }
+
+        closePasswordModal();
+        alert("Neno siri limebadilishwa kikamilifu.");
+    }catch(error){
+        alert(error?.message || "Imeshindikana kubadili neno siri.");
+    }finally{
+        if(button){
+            button.disabled=false;
+            button.textContent="Badili Neno Siri";
+        }
+    }
 }
 
 function showForgotPassword(){
@@ -2263,6 +2447,74 @@ function closeForgotPassword(){
     if(!modal) return;
     modal.classList.add("hidden");
     modal.classList.remove("flex");
+}
+
+function showRecoveryPassword(){
+    const modal=document.getElementById("recoveryModal");
+    if(!modal)return;
+    document.getElementById("recoveryPassword").value="";
+    document.getElementById("recoveryPasswordConfirm").value="";
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    setTimeout(()=>document.getElementById("recoveryPassword")?.focus(),50);
+}
+
+function closeRecoveryPassword(){
+    const modal=document.getElementById("recoveryModal");
+    if(!modal)return;
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+
+function clearRecoveryUrl(){
+    try{
+        const cleanUrl=window.location.origin+window.location.pathname+window.location.search;
+        window.history.replaceState({},document.title,cleanUrl);
+    }catch(error){
+        console.warn("Haikuweza kusafisha recovery URL:",error);
+    }
+}
+
+async function completePasswordRecovery(){
+    ensureClient();
+    const password=document.getElementById("recoveryPassword").value;
+    const confirmPassword=document.getElementById("recoveryPasswordConfirm").value;
+    const button=document.getElementById("recoveryPasswordButton");
+
+    const passwordError=validateStrongPassword(password);
+    if(passwordError){
+        alert(passwordError);
+        return;
+    }
+    if(password!==confirmPassword){
+        alert("Maneno ya siri hayafanani.");
+        return;
+    }
+
+    if(button){
+        button.disabled=true;
+        button.textContent="Inahifadhi...";
+    }
+
+    try{
+        const {error}=await supabaseClient.auth.updateUser({password});
+        if(error){
+            console.error("completePasswordRecovery error:",error);
+            throw new Error(error.message||"Imeshindikana kuweka neno siri jipya.");
+        }
+
+        clearRecoveryUrl();
+        closeRecoveryPassword();
+        alert("Neno siri limewekwa upya kikamilifu. Kwa usalama, utaondolewa kwenye akaunti. Ingia tena kwa kutumia neno siri jipya.");
+        await supabaseClient.auth.signOut();
+    }catch(error){
+        alert(error?.message||"Imeshindikana kuweka neno siri jipya.");
+    }finally{
+        if(button){
+            button.disabled=false;
+            button.textContent="Weka Neno Siri Jipya";
+        }
+    }
 }
 
 async function sendPasswordReset(){
@@ -2304,19 +2556,69 @@ async function logout(){
 /* =========================================================
    AUTH SESSION CHECK
 ========================================================= */
+async function validateCurrentSession(force=false){
+    if(!supabaseClient || sessionValidationInProgress) return true;
+    const now=Date.now();
+    if(!force && now-lastSessionValidationAt < SESSION_VALIDATION_INTERVAL) return true;
+    sessionValidationInProgress=true;
+    try{
+        const {data,error}=await supabaseClient.auth.getUser();
+        if(error || !data?.user){
+            await supabaseClient.auth.signOut();
+            showMessage("Session yako imekwisha au si halali. Tafadhali ingia tena.","error");
+            return false;
+        }
+        const user=data.user;
+        const {data:profile,error:profileError}=await supabaseClient.from("profiles").select("id,first_name,middle_name,last_name,phone,role,is_active").eq("id",user.id).single();
+        if(profileError){
+            console.error("Session profile validation error:",profileError);
+            return true;
+        }
+        if(!profile || !profile.is_active){
+            await supabaseClient.auth.signOut();
+            showMessage("Akaunti yako imelemazwa na Administrator.","error");
+            return false;
+        }
+        if(!ALLOWED_ROLES.includes(profile.role)){
+            await supabaseClient.auth.signOut();
+            showMessage("Role ya akaunti haijatambuliwa. Tafadhali wasiliana na Administrator.","error");
+            return false;
+        }
+        currentUser=user;
+        currentProfile=profile;
+        lastSessionValidationAt=now;
+        const nameEl=document.getElementById("currentUserName"); if(nameEl) nameEl.textContent=fullName(profile)||user.email||"-";
+        const roleEl=document.getElementById("currentUserRole"); if(roleEl){roleEl.textContent="Wadhifa: "+(profile.role||"-");roleEl.title="Wadhifa: "+(profile.role||"-");}
+        const accountEmail=document.getElementById("accountEmail"); if(accountEmail) accountEmail.textContent=user.email||"-";
+        const accountName=document.getElementById("accountName"); if(accountName) accountName.textContent=fullName(profile)||"-";
+        const accountRole=document.getElementById("accountRole"); if(accountRole) accountRole.textContent=profile.role||"-";
+        applyRolePermissions();
+        return true;
+    }catch(error){
+        console.error("validateCurrentSession error:",error);
+        return true;
+    }finally{sessionValidationInProgress=false;}
+}
+
+function startSessionSecurityMonitor(){
+    if(sessionValidationTimer) clearInterval(sessionValidationTimer);
+    sessionValidationTimer=setInterval(()=>{
+        if(document.hidden || !currentUser) return;
+        validateCurrentSession(false);
+    },SESSION_VALIDATION_INTERVAL);
+    document.addEventListener("visibilitychange",()=>{
+        if(!document.hidden && currentUser) validateCurrentSession(false);
+    });
+}
+
 async function checkExistingSession(){
     if(!supabaseClient)return;
-
     const {data,error}=await supabaseClient.auth.getSession();
-
-    if(error){
-        console.error(error);
-        return;
-    }
-
+    if(error){console.error(error);return;}
     if(data.session?.user){
         try{
             await loadApplication(data.session.user);
+            await validateCurrentSession(true);
         }catch(error){
             console.error(error);
             showMessage(error.message||"Imeshindikana kufungua akaunti.");
@@ -2329,16 +2631,17 @@ async function checkExistingSession(){
 ========================================================= */
 if(supabaseClient){
     supabaseClient.auth.onAuthStateChange((event,session)=>{
-        /* Do not call loadApplication immediately here.
-           checkExistingSession handles the initial session.
-           This avoids duplicate loads after login. */
+        if(event==="PASSWORD_RECOVERY"){
+            setTimeout(()=>{if(session?.user) currentUser=session.user; showRecoveryPassword();},0);
+            return;
+        }
         if(event==="SIGNED_OUT"){
-            currentUser=null;
-            currentProfile=null;
-            contributionTarget=0;
+            currentUser=null; currentProfile=null; contributionTarget=0; lastSessionValidationAt=0;
             document.getElementById("app").classList.add("hidden");
             document.getElementById("loginPage").classList.remove("hidden");
+            return;
         }
+        if(event==="TOKEN_REFRESHED" && session?.user) validateCurrentSession(true);
     });
 }
 
