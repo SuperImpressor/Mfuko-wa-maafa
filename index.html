@@ -38,6 +38,12 @@ body{font-family:Arial,sans-serif}
 .sidebar-link:hover{background:#f1f5f9}
 .sidebar-link.bg-blue-600:hover{background:#2563eb}
 
+
+/* Wanafamilia: mistari ya columns ishuke kuanzia header hadi mstari wa mwisho */
+#page-family table{border-collapse:collapse;}
+#page-family table thead th,#page-family table tbody td{border-right:1px solid #cbd5e1;border-bottom:1px solid #e2e8f0;}
+#page-family table thead th:last-child,#page-family table tbody td:last-child{border-right:none;}
+#page-family table tbody tr:last-child td{border-bottom:none;}
 </style>
 </head>
 
@@ -144,7 +150,7 @@ Umesahau neno siri?
 <div id="currentUserRole" class="inline-flex mt-0.5 px-2 py-0.5 rounded-full bg-white/15 text-white text-[11px] font-bold truncate max-w-full">Wadhifa: -</div>
 </div>
 <button type="button" onclick="logout()"
- class="bg-red-600 hover:bg-red-700 px-2 py-1.5 rounded-md text-xs font-bold whitespace-nowrap">Toka</button>
+ class="bg-red-600 hover:bg-red-700 px-1 py-0.5 rounded-md text-xs font-bold">Toka</button>
 </div>
 </div>
 </div>
@@ -261,18 +267,19 @@ Umesahau neno siri?
  class="w-full border rounded-lg px-4 py-3" placeholder="Tafuta jina au simu...">
 </div>
 <div class="overflow-x-auto">
-<table class="w-full text-sm">
+<table class="w-full text-sm border-collapse">
 <thead class="bg-slate-100">
-<tr>
-<th class="text-left p-3">Jina</th>
-<th class="text-left p-3">Simu</th>
-<th class="text-left p-3">Umri</th>
-<th class="text-left p-3">Hali ya ndoa</th>
-<th class="text-left p-3">Tarehe ya kuzaliwa</th>
-<th class="text-right p-3">Vitendo</th>
+<tr class="divide-x divide-slate-300">
+<th class="text-center p-3 border-r border-slate-300">Jina</th>
+<th class="text-center p-3 border-r border-slate-300">Simu</th>
+<th class="text-center p-3 border-r border-slate-300">Umri</th>
+<th class="text-center p-3 border-r border-slate-300">Hali ya ndoa</th>
+<th class="text-center p-3 border-r border-slate-300">Tarehe ya kuzaliwa</th>
+<th class="text-center p-3 border-r border-slate-300">Hali ya uhai</th>
+<th class="text-center p-3">Vitendo</th>
 </tr>
 </thead>
-<tbody id="familyTable"></tbody>
+<tbody id="familyTable" class="divide-y divide-slate-200"></tbody>
 </table>
 </div>
 </div>
@@ -326,7 +333,7 @@ Umesahau neno siri?
 </div></div>
 <div id="reportSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5"></div>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-<div class="bg-white rounded-xl shadow p-5"><h3 class="font-bold mb-4">Mgawanyo wa Wanafamilia</h3><div id="reportFamilyBreakdown" class="space-y-3"></div></div>
+<div class="bg-white rounded-xl shadow p-5"><h3 class="font-bold mb-4">Hali ya Uhai ya Wanafamilia</h3><div id="reportFamilyBreakdown" class="space-y-3"></div></div>
 <div class="bg-white rounded-xl shadow p-5"><h3 class="font-bold mb-4">Muhtasari wa Michango</h3><div id="reportContributionBreakdown" class="space-y-3"></div></div>
 </div>
 <div class="bg-white rounded-xl shadow mt-5 p-5"><div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-bold">Mwenendo wa Michango kwa Mwezi</h3><span class="text-xs text-slate-500">Jumla kwa mwezi</span></div><div id="reportMonthlyBreakdown" class="space-y-3"></div></div>
@@ -504,8 +511,8 @@ Badili Neno Siri
 </main>
 </div>
 
-<div id="familyModal" class="hidden fixed inset-0 z-50 modal-bg items-center justify-center p-4">
-<div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
+<div id="familyModal" class="hidden fixed inset-0 z-50 modal-bg items-center justify-center p-3 sm:p-4 overflow-y-auto">
+<div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-4 sm:p-6 my-auto max-h-[92vh] overflow-y-auto">
 <div class="flex justify-between items-center mb-5">
 <h3 id="familyModalTitle" class="text-xl font-bold">Ongeza Mwanachama</h3>
 <button type="button" onclick="closeFamilyModal()" class="text-2xl">×</button>
@@ -532,6 +539,12 @@ Badili Neno Siri
 <option value="Mjane">Mjane</option>
 <option value="Mgane">Mgane</option>
 <option value="Wameachana">Wameachana</option>
+</select>
+<label class="block text-sm font-semibold mb-1">Hali ya uhai</label>
+<select id="familyLifeStatus" class="w-full border rounded-lg px-3 py-3 mb-5">
+<option value="Haijulikani">Hajaainishwa</option>
+<option value="Hai">Hai</option>
+<option value="Amefariki">Amefariki</option>
 </select>
 <button type="button" onclick="saveFamilyMember()"
  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-bold">Hifadhi</button>
@@ -1175,7 +1188,7 @@ async function loadFamilyMembers(attempt=1){
 
         const {data,error}=await supabaseClient
             .from("family_members")
-            .select("id,first_name,middle_name,last_name,phone,email,gender,date_of_birth,marital_status,address,relationship,is_active,created_at,updated_at")
+            .select("id,first_name,middle_name,last_name,phone,email,gender,date_of_birth,marital_status,life_status,address,relationship,is_active,created_at,updated_at")
             .order("id",{ascending:true});
 
         if(error) throw error;
@@ -1201,7 +1214,7 @@ async function loadFamilyMembers(attempt=1){
         const table=document.getElementById("familyTable");
         if(table){
             table.innerHTML=`
-            <tr><td colspan="6" class="p-6 text-center text-red-600">
+            <tr><td colspan="7" class="p-6 text-center text-red-600">
                 <div class="font-semibold mb-2">Imeshindikana kupakia wanafamilia.</div>
                 <div class="text-sm mb-4">${escapeHtml(error?.message||"Hitilafu isiyojulikana.")}</div>
                 <button type="button" onclick="loadFamilyMembers()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold">Jaribu tena</button>
@@ -1226,6 +1239,12 @@ function maritalStatusLabel(status){
     return status||"-";
 }
 
+function lifeStatusLabel(status){
+    if(status==="Hai") return "Hai";
+    if(status==="Amefariki") return "Amefariki";
+    return "Hajaainishwa";
+}
+
 function renderFamilyMembers(list=familyMembers){
     const table=document.getElementById("familyTable");
     const badge=document.getElementById("familyCountBadge");
@@ -1235,7 +1254,7 @@ function renderFamilyMembers(list=familyMembers){
     if(badge) badge.textContent=rows.length;
 
     if(!rows.length){
-        table.innerHTML=`<tr><td colspan="6" class="p-6 text-center text-slate-500">Hakuna wanafamilia.</td></tr>`;
+        table.innerHTML=`<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna wanafamilia.</td></tr>`;
         return;
     }
 
@@ -1246,11 +1265,14 @@ function renderFamilyMembers(list=familyMembers){
       <td class="p-3 font-semibold">${escapeHtml(calculateAge(member.date_of_birth))}</td>
       <td class="p-3">${escapeHtml(maritalStatusLabel(member.marital_status))}</td>
       <td class="p-3">${member.date_of_birth?new Date(member.date_of_birth+"T00:00:00").toLocaleDateString("sw-TZ"):"-"}</td>
-      <td class="p-3 text-right">
+      <td class="p-3">${escapeHtml(lifeStatusLabel(member.life_status))}</td>
+      <td class="p-3">
       ${["Administrator","Katibu"].includes(currentProfile?.role)?`
-        <button type="button" onclick="editFamily('${escapeHtml(member.id)}')" class="text-blue-600 mr-3">Hariri</button>
-        ${currentProfile?.role==="Administrator"?`
-        <button type="button" onclick="deleteFamily('${escapeHtml(member.id)}')" class="text-red-600">Futa</button>`:""}
+        <div class="flex items-center justify-end gap-4 whitespace-nowrap">
+          <button type="button" onclick="editFamily('${escapeHtml(member.id)}')" class="text-blue-600 hover:underline">Hariri</button>
+          ${currentProfile?.role==="Administrator"?`
+          <button type="button" onclick="deleteFamily('${escapeHtml(member.id)}')" class="text-red-600 hover:underline">Futa</button>`:""}
+        </div>
       `:"-"}
       </td>
     </tr>`).join("");
@@ -1259,7 +1281,7 @@ function renderFamilyMembers(list=familyMembers){
 function filterFamily(){
     const q=document.getElementById("familySearch").value.toLowerCase();
     renderFamilyMembers(familyMembers.filter(row=>
-        (fullName(row)+" "+(row.phone||"")+" "+(row.marital_status||"")+" "+calculateAge(row.date_of_birth)).toLowerCase().includes(q)
+        (fullName(row)+" "+(row.phone||"")+" "+(row.marital_status||"")+" "+(row.life_status||"")+" "+calculateAge(row.date_of_birth)).toLowerCase().includes(q)
     ));
 }
 
@@ -1278,6 +1300,7 @@ function openFamilyModal(member=null){
     document.getElementById("familyPhone").value=member?.phone||"";
     document.getElementById("familyDateOfBirth").value=member?.date_of_birth||"";
     document.getElementById("familyMaritalStatus").value=member?.marital_status||"";
+    document.getElementById("familyLifeStatus").value=member?.life_status||"Haijulikani";
     document.getElementById("familyModalTitle").textContent=member?"Hariri Mwanachama":"Ongeza Mwanachama";
 }
 
@@ -1299,7 +1322,8 @@ async function saveFamilyMember(){
         last_name:document.getElementById("familyLastName").value.trim(),
         phone:document.getElementById("familyPhone").value.trim(),
         date_of_birth:document.getElementById("familyDateOfBirth").value||null,
-        marital_status:document.getElementById("familyMaritalStatus").value||null
+        marital_status:document.getElementById("familyMaritalStatus").value||null,
+        life_status:document.getElementById("familyLifeStatus").value||"Haijulikani"
     };
 
     if(!payload.first_name||!payload.last_name){
@@ -1362,7 +1386,7 @@ async function loadDisasterAssistance(){
  const summary=document.getElementById('disasterSummary'); if(summary) summary.innerHTML=[['Matukio/Misaada',rows.length],['Jumla ya Misaada', 'TZS '+money(rows.reduce((a,x)=>a+Number(x.amount||0),0))],['Imelipwa','TZS '+money(totalPaid)]].map(x=>`<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">${x[0]}</p><p class="text-2xl font-bold mt-2">${x[1]}</p></div>`).join('');
  renderDisasterTable(rows); populateDisasterMembers(); renderPendingApprovals();
 }
-function renderDisasterTable(source=disasterAssistance){const q=(document.getElementById('disasterSearch')?.value||'').toLowerCase().trim();const from=document.getElementById('disasterFrom')?.value||'',to=document.getElementById('disasterTo')?.value||'';const rows=source.filter(x=>(!from||x.assistance_date>=from)&&(!to||x.assistance_date<=to)&&(!q||[x.member_name,x.disaster_type,x.receipt_number,x.description].join(' ').toLowerCase().includes(q)));const t=document.getElementById('disasterTable');if(!t)return;t.innerHTML=rows.length?rows.map(x=>{const canPay=['Administrator','Mhasibu'].includes(currentProfile?.role)&&x.approval_status==='Imeidhinishwa'&&x.payment_status!=='Imelipwa'&&x.status!=='Imeghairiwa';const canEdit=['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)&&x.approval_status==='Inasubiri'&&x.payment_status!=='Imelipwa';const canDelete=currentProfile?.role==='Administrator';const paymentLabel=x.payment_status==='Imelipwa'?'Imelipwa':'Haijalipwa';return `<tr class="border-t"><td class="p-3">${escapeHtml(x.assistance_date||'-')}</td><td class="p-3">${escapeHtml(x.member_name||'-')}</td><td class="p-3">${escapeHtml(x.disaster_type||'-')}</td><td class="p-3">${escapeHtml(x.description||'-')}</td><td class="p-3 text-right font-bold">TZS ${money(x.amount)}</td><td class="p-3"><span class="font-semibold">${escapeHtml(x.status||'-')}</span><br><span class="text-xs text-slate-500">Idhini: ${escapeHtml(x.approval_status||'Inasubiri')}</span><br><span class="text-xs ${x.payment_status==='Imelipwa'?'text-green-700':'text-amber-700'} font-semibold">Malipo: ${paymentLabel}</span></td><td class="p-3 text-right whitespace-nowrap">${canEdit?`<button onclick="editDisaster(${x.id})" class="text-blue-600 font-bold mr-3">Hariri</button>`:''}${canPay?`<button onclick="payDisaster(${x.id})" class="text-emerald-600 font-bold mr-3">Lipa</button>`:''}${canDelete?`<button onclick="deleteDisaster(${x.id})" class="text-red-600 font-bold">Futa</button>`:''}</td></tr>`}).join(''):'<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna kumbukumbu za msaada.</td></tr>';}
+function renderDisasterTable(source=disasterAssistance){const q=(document.getElementById('disasterSearch')?.value||'').toLowerCase().trim();const from=document.getElementById('disasterFrom')?.value||'',to=document.getElementById('disasterTo')?.value||'';const rows=source.filter(x=>(!from||x.assistance_date>=from)&&(!to||x.assistance_date<=to)&&(!q||[x.member_name,x.disaster_type,x.receipt_number,x.description].join(' ').toLowerCase().includes(q)));const t=document.getElementById('disasterTable');if(!t)return;t.innerHTML=rows.length?rows.map(x=>{const canPay=['Administrator','Mhasibu'].includes(currentProfile?.role)&&x.approval_status==='Imeidhinishwa'&&x.payment_status!=='Imelipwa'&&x.status!=='Imeghairiwa';const canEdit=['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)&&x.approval_status==='Inasubiri'&&x.payment_status!=='Imelipwa';const canDelete=currentProfile?.role==='Administrator';const paymentLabel=x.payment_status==='Imelipwa'?'Imelipwa':'Haijalipwa';return `<tr class="border-t"><td class="p-3">${escapeHtml(x.assistance_date||'-')}</td><td class="p-3">${escapeHtml(x.member_name||'-')}</td><td class="p-3">${escapeHtml(x.disaster_type||'-')}</td><td class="p-3">${escapeHtml(x.description||'-')}</td><td class="p-3 text-right font-bold">TZS ${money(x.amount)}</td><td class="p-3"><span class="font-semibold">${escapeHtml(x.status||'-')}</span><br><span class="text-xs text-slate-500">Idhini: ${escapeHtml(x.approval_status||'Inasubiri')}</span><br><span class="text-xs ${x.payment_status==='Imelipwa'?'text-green-700':'text-amber-700'} font-semibold">Malipo: ${paymentLabel}</span></td><td class="p-3 text-center align-middle whitespace-nowrap"><div class="flex items-center justify-center gap-4">${canEdit?`<button onclick="editDisaster(${x.id})" class="text-blue-600 font-bold">Hariri</button>`:''}${canPay?`<button onclick="payDisaster(${x.id})" class="text-emerald-600 font-bold">Lipa</button>`:''}${canDelete?`<button onclick="deleteDisaster(${x.id})" class="text-red-600 font-bold">Futa</button>`:''}</div></td></tr>`}).join(''):'<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna kumbukumbu za msaada.</td></tr>';}
 function populateDisasterMembers(){const s=document.getElementById('disasterMember');if(!s)return;const old=s.value;s.innerHTML='<option value="">Chagua mwanafamilia</option>'+familyMembers.map(m=>`<option value="${m.id}">${escapeHtml(fullName(m))}</option>`).join('');if(old)s.value=old;}
 function openDisasterModal(id=null){if(!['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)){alert('Huna ruhusa ya kurekodi au kuhariri msaada.');return;}populateDisasterMembers();const r=id?disasterAssistance.find(x=>Number(x.id)===Number(id)):null;if(r&&(r.approval_status!=='Inasubiri'||r.payment_status==='Imelipwa')){alert('Ombi hili haliwezi kuhaririwa baada ya idhini au malipo.');return;}document.getElementById('disasterId').value=r?.id||'';document.getElementById('disasterMember').value=r?.family_member_id||'';document.getElementById('disasterIncidentDate').value=r?.incident_date||new Date().toISOString().slice(0,10);document.getElementById('disasterAssistanceDate').value=r?.assistance_date||new Date().toISOString().slice(0,10);document.getElementById('disasterType').value=r?.disaster_type||'';document.getElementById('disasterAmount').value=r?.amount||'';document.getElementById('disasterReceipt').value=r?.receipt_number||'';document.getElementById('disasterStatus').value='Inasubiri';document.getElementById('disasterApprovalStatus').value='Inasubiri';document.getElementById('disasterApprovalNotes').value='';document.getElementById('disasterPaymentStatusDisplay').value=r?.payment_status||'Haijalipwa';document.getElementById('disasterDescription').value=r?.description||'';document.getElementById('disasterNotes').value=r?.notes||'';const m=document.getElementById('disasterModal');m.classList.remove('hidden');m.classList.add('flex');}
 function closeDisasterModal(){const m=document.getElementById('disasterModal');m.classList.add('hidden');m.classList.remove('flex');}
@@ -1525,7 +1549,7 @@ async function loadReports(){
 
         const [cr,fr]=await Promise.all([
             cq,
-            supabaseClient.from('family_members').select('id,first_name,middle_name,last_name,gender,is_active,relationship').order('id',{ascending:true})
+            supabaseClient.from('family_members').select('id,first_name,middle_name,last_name,gender,is_active,life_status,relationship').order('id',{ascending:true})
         ]);
         if(cr.error) throw cr.error;
         if(fr.error) throw fr.error;
@@ -1547,13 +1571,13 @@ async function loadReports(){
             ['Wachangiaji tofauti',uniqueContributors]
         ].map(x=>`<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">${x[0]}</p><p class="text-2xl font-bold mt-2">${x[1]}</p></div>`).join('');
 
-        // Mgawanyo wa wanafamilia: jinsia + hali ya uanachama.
-        const gender={};
-        members.forEach(m=>{const k=(m.gender||'Haijaainishwa').trim()||'Haijaainishwa';gender[k]=(gender[k]||0)+1;});
-        const status={'Walio hai':activeMembers.length,'Wasio hai':members.length-activeMembers.length};
-        if(familyBox) familyBox.innerHTML=
-            [...Object.entries(gender).map(([k,v])=>[k,v]),...Object.entries(status)]
-            .map(([k,v])=>`<div class="flex justify-between border-b last:border-0 pb-2 mb-2"><span>${escapeHtml(k)}</span><b>${v}</b></div>`).join('') || '<p class="text-slate-500 text-sm">Hakuna taarifa za wanafamilia.</p>';
+        // Uainishaji wa hali halisi ya uhai wa mwanafamilia.
+        const aliveCount=members.filter(m=>m.life_status==='Hai').length;
+        const deceasedCount=members.filter(m=>m.life_status==='Amefariki').length;
+        const unclassifiedCount=members.filter(m=>!m.life_status || m.life_status==='Haijulikani').length;
+        const status=[['Walio hai',aliveCount,'text-emerald-700'],['Amefariki',deceasedCount,'text-slate-700'],['Hajaainishwa',unclassifiedCount,'text-amber-700']];
+        if(familyBox) familyBox.innerHTML=status
+            .map(([k,v,c])=>`<div class="flex items-center justify-between border-b last:border-0 pb-3 mb-3"><span class="${c}">${escapeHtml(k)}</span><b class="text-xl">${v}</b></div>`).join('') || '<p class="text-slate-500 text-sm">Hakuna taarifa za wanafamilia.</p>';
 
         // Muhtasari wa aina ya wachangiaji.
         const types={};
