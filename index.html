@@ -208,14 +208,14 @@ Umesahau neno siri?
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
 <div class="rounded-lg bg-blue-50 p-3"><p class="text-xs text-slate-500">🎯 Lengo la Mchango</p><p id="dashboardTarget" class="font-bold mt-1">TZS 0</p></div>
-<div class="rounded-lg bg-green-50 p-3"><p class="text-xs text-slate-500">💰 Kilichochangwa</p><p id="dashboardCollected" class="font-bold mt-1">TZS 0</p></div>
-<div class="rounded-lg bg-orange-50 p-3"><p class="text-xs text-slate-500">💵 Kilichobaki</p><p id="dashboardRemaining" class="font-bold mt-1">TZS 0</p></div>
+<div class="rounded-lg bg-green-50 p-3"><p class="text-xs text-slate-500">💰Kiasi Kilichochangwa</p><p id="dashboardCollected" class="font-bold mt-1">TZS 0</p></div>
+<div class="rounded-lg bg-orange-50 p-3"><p class="text-xs text-slate-500">Kiasi Kilichobaki Kufikia Lengo</p><p id="dashboardRemaining" class="font-bold mt-1">TZS 0</p></div>
 </div>
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
 <div class="bg-white rounded-xl shadow p-5">
-<p class="text-slate-500 text-sm">Wanafamilia</p>
+<p class="text-slate-500 text-sm">Idadi ya Wanafamilia</p>
 <p id="dashboardMembers" class="text-3xl font-bold mt-2">0</p>
 </div>
 <div class="bg-white rounded-xl shadow p-5">
@@ -223,11 +223,11 @@ Umesahau neno siri?
 <p id="dashboardContributions" class="text-3xl font-bold mt-2">0</p>
 </div>
 <div class="bg-white rounded-xl shadow p-5">
-<p class="text-slate-500 text-sm">Jumla ya Fedha</p>
+<p class="text-slate-500 text-sm">Jumla ya Fedha Zote</p>
 <p id="dashboardAmount" class="text-2xl font-bold mt-2">TZS 0</p>
 </div>
 <div class="bg-white rounded-xl shadow p-5">
-<p class="text-slate-500 text-sm">Kiasi cha Wanafamilia</p>
+<p class="text-slate-500 text-sm">Kiasi Kilichochangwa na Wanafamilia</p>
 <p id="dashboardFamilyAmount" class="text-2xl font-bold mt-2">TZS 0</p>
 </div>
 <div class="bg-white rounded-xl shadow p-5">
@@ -1250,7 +1250,11 @@ function renderFamilyMembers(list=familyMembers){
     const badge=document.getElementById("familyCountBadge");
     if(!table) return;
 
-    const rows=Array.isArray(list)?list:[];
+    const rows=(Array.isArray(list)?list:[]).slice().sort((a,b)=>{
+        const nameA=fullName(a)||"";
+        const nameB=fullName(b)||"";
+        return nameA.localeCompare(nameB,"sw",{sensitivity:"base",numeric:true});
+    });
     if(badge) badge.textContent=rows.length;
 
     if(!rows.length){
