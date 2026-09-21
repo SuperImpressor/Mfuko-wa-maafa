@@ -566,9 +566,9 @@ Badili Neno Siri
 <option value="Mdau">Mdau / Mtu wa nje</option>
 </select>
 <div id="familyContributorPicker" class="mb-4">
-<label class="block text-sm font-semibold mb-1">Mwanfamilia</label>
+<label class="block text-sm font-semibold mb-1">Mwanafamilia</label>
 <select id="contributionFamilyMember" onchange="selectContributionFamilyMember()" class="w-full border rounded-lg px-3 py-3">
-<option value="">Chagua mwanfamilia...</option>
+<option value="">Chagua mwanafamilia...</option>
 </select>
 <p class="text-xs text-slate-500 mt-1">Kwa Mwanafamilia, jina na simu vitachukuliwa moja kwa moja kutoka orodha ya Wanafamilia.</p>
 </div>
@@ -1726,9 +1726,11 @@ function renderContributions(list=contributions){
           <td class="p-3">${escapeHtml(row.contributor_type||"-")}</td>
           <td class="p-3 text-right font-bold">TZS ${money(row.amount)}</td>
           <td class="p-3">${escapeHtml(receiver)}</td>
-          <td class="p-3 text-right">
-            <button type="button" onclick="printReceipt('${escapeHtml(row.id)}')" class="text-blue-600 mr-3">Risiti</button>
-            ${canEdit?`<button type="button" onclick="editContribution('${escapeHtml(row.id)}')" class="text-orange-600">Hariri</button>`:""}
+          <td class="p-3 text-center align-middle">
+            <div class="flex items-center justify-center gap-4">
+              <button type="button" onclick="printReceipt('${escapeHtml(row.id)}')" class="text-blue-600 font-semibold">Risiti</button>
+              ${canEdit?`<button type="button" onclick="editContribution('${escapeHtml(row.id)}')" class="text-orange-600 font-semibold">Hariri</button>`:""}
+            </div>
           </td>
         </tr>`;
     }).join("");
@@ -1806,8 +1808,15 @@ function closeContributionModal(){
 function populateContributionFamilyMembers(selectedId="") {
     const select=document.getElementById("contributionFamilyMember");
     if(!select) return;
-    const options=familyMembers.map(member=>`<option value="${escapeHtml(member.id)}">${escapeHtml(fullName(member))}${member.phone?" — "+escapeHtml(member.phone):""}</option>`).join("");
-    select.innerHTML=`<option value="">Chagua mwanfamilia...</option>${options}`;
+
+    // Panga majina ya wanafamilia kwa alfabeti (A-Z) bila kubadilisha
+    // mpangilio wa familyMembers unaotumika sehemu nyingine za mfumo.
+    const sortedMembers=[...familyMembers].sort((a,b)=>
+        fullName(a).localeCompare(fullName(b),"sw",{sensitivity:"base",numeric:true})
+    );
+
+    const options=sortedMembers.map(member=>`<option value="${escapeHtml(member.id)}">${escapeHtml(fullName(member))}${member.phone?" — "+escapeHtml(member.phone):""}</option>`).join("");
+    select.innerHTML=`<option value="">Chagua mwanafamilia...</option>${options}`;
     if(selectedId) select.value=String(selectedId);
 }
 
@@ -2125,18 +2134,20 @@ function renderUsers(){
           </td>
           <td class="p-3 text-right">
             ${self?"<span class=\"text-xs text-slate-400\">Akaunti yako</span>":
-              `<div class="flex flex-wrap justify-end items-center gap-3">
-                <button type="button" onclick="toggleUserStatus('${escapeHtml(user.id)}',${!active})"
-                  class="inline-flex items-center rounded-lg px-3 py-2 font-bold text-white ${active?"bg-red-600 hover:bg-red-700":"bg-green-600 hover:bg-green-700"}">
-                  ${active?"Zima":"Washa"}
-                </button>
+              `<div class="flex flex-col items-center justify-center gap-2 py-1">
+                <div class="flex items-center justify-center gap-2">
+                  <button type="button" onclick="toggleUserStatus('${escapeHtml(user.id)}',${!active})"
+                    class="inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-bold text-white ${active?"bg-red-600 hover:bg-red-700":"bg-green-600 hover:bg-green-700"}">
+                    ${active?"Zima":"Washa"}
+                  </button>
+                  <button type="button" onclick="deleteUser('${escapeHtml(user.id)}')"
+                    class="inline-flex items-center justify-center rounded-md bg-red-600 px-2 py-1 text-xs text-white font-semibold hover:bg-red-700">
+                    Futa
+                  </button>
+                </div>
                 <button type="button" onclick="openAdminResetPassword('${escapeHtml(user.id)}')"
-                  class="inline-flex items-center rounded-lg px-3 py-2 font-bold text-white bg-blue-600 hover:bg-blue-700">
+                  class="inline-flex items-center justify-center rounded-md px-2 py-1 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700">
                   Badili Neno Siri
-                </button>
-                <button type="button" onclick="deleteUser('${escapeHtml(user.id)}')"
-                  class="inline-flex items-center rounded-md bg-red-600 px-2 py-1 text-sm text-white font-semibold hover:bg-red-700">
-                  Futa
                 </button>
               </div>`}
           </td>
