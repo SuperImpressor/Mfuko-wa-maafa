@@ -181,7 +181,7 @@ Umesahau neno siri?
     </div>
   </div>
   <div class="px-4 pb-5 mt-auto">
-    <div class="border-t pt-4 text-xs text-slate-400">Mo'Nyakorema O'Rila<br>Usimamizi wa Wanafamilia</div>
+    <div class="border-t pt-4 text-xs text-slate-400">Mo'Nyakorema O'Rila<br>Mfumo umeandaliwa na Wambura Vincent 0789829292</div>
   </div>
 </aside>
 
@@ -243,7 +243,7 @@ Umesahau neno siri?
 </div>
 <div class="bg-white rounded-xl shadow mt-6 p-5">
 <h3 class="font-bold text-lg mb-4">Karibu</h3>
-<p class="text-slate-600">Tumia menyu hapo juu kusimamia wanafamilia, michango na akaunti yako.</p>
+<p class="text-slate-600">Tumia menyu hapo juu upande wa kushoto.</p>
 </div>
 </section>
 
@@ -258,7 +258,7 @@ Umesahau neno siri?
 </div>
 <button id="addFamilyButton" onclick="openFamilyModal()"
  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold">
-+ Ongeza Mwanachama
++ Ongeza Mwanafamilia
 </button>
 </div>
 <div class="bg-white rounded-xl shadow overflow-hidden">
@@ -271,6 +271,7 @@ Umesahau neno siri?
 <thead class="bg-slate-100">
 <tr class="divide-x divide-slate-300">
 <th class="text-center p-3 border-r border-slate-300">Jina</th>
+<th class="text-center p-3 border-r border-slate-300">Jinsia</th>
 <th class="text-center p-3 border-r border-slate-300">Simu</th>
 <th class="text-center p-3 border-r border-slate-300">Umri</th>
 <th class="text-center p-3 border-r border-slate-300">Hali ya ndoa</th>
@@ -524,6 +525,12 @@ Badili Neno Siri
 <input id="familyMiddleName" class="w-full border rounded-lg px-3 py-3 mb-4">
 <label class="block text-sm font-semibold mb-1">Jina la mwisho</label>
 <input id="familyLastName" class="w-full border rounded-lg px-3 py-3 mb-4">
+<label class="block text-sm font-semibold mb-1">Jinsia</label>
+<select id="familyGender" class="w-full border rounded-lg px-3 py-3 mb-4">
+<option value="">Chagua jinsia</option>
+<option value="Ke">Ke</option>
+<option value="Me">Me</option>
+</select>
 <label class="block text-sm font-semibold mb-1">Simu</label>
 <input id="familyPhone" class="w-full border rounded-lg px-3 py-3 mb-4">
 <label class="block text-sm font-semibold mb-1">Tarehe ya kuzaliwa</label>
@@ -1183,7 +1190,7 @@ async function loadFamilyMembers(attempt=1){
 
         const table=document.getElementById("familyTable");
         if(table && attempt===1){
-            table.innerHTML=`<tr><td colspan="6" class="p-6 text-center text-slate-500">Inapakia orodha ya wanafamilia...</td></tr>`;
+            table.innerHTML=`<tr><td colspan="8" class="p-6 text-center text-slate-500">Inapakia orodha ya wanafamilia...</td></tr>`;
         }
 
         const {data,error}=await supabaseClient
@@ -1214,7 +1221,7 @@ async function loadFamilyMembers(attempt=1){
         const table=document.getElementById("familyTable");
         if(table){
             table.innerHTML=`
-            <tr><td colspan="7" class="p-6 text-center text-red-600">
+            <tr><td colspan="8" class="p-6 text-center text-red-600">
                 <div class="font-semibold mb-2">Imeshindikana kupakia wanafamilia.</div>
                 <div class="text-sm mb-4">${escapeHtml(error?.message||"Hitilafu isiyojulikana.")}</div>
                 <button type="button" onclick="loadFamilyMembers()" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold">Jaribu tena</button>
@@ -1258,13 +1265,14 @@ function renderFamilyMembers(list=familyMembers){
     if(badge) badge.textContent=rows.length;
 
     if(!rows.length){
-        table.innerHTML=`<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna wanafamilia.</td></tr>`;
+        table.innerHTML=`<tr><td colspan="8" class="p-6 text-center text-slate-500">Hakuna wanafamilia.</td></tr>`;
         return;
     }
 
     table.innerHTML=rows.map(member=>`
     <tr class="border-t hover:bg-slate-50">
       <td class="p-3 font-semibold">${escapeHtml(fullName(member)||"-")}</td>
+      <td class="p-3">${escapeHtml(member.gender||"-")}</td>
       <td class="p-3">${member.phone ? `<div class="flex flex-wrap items-center gap-2"><a href="tel:${escapeHtml(String(member.phone).replace(/[^0-9+]/g,''))}" class="text-blue-600 hover:text-blue-800 hover:underline font-semibold" title="Piga simu">${escapeHtml(member.phone)}</a><a href="https://wa.me/${String(member.phone).replace(/[^0-9]/g,'').replace(/^0/,'255')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-2 py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white text-xs font-bold" title="Tuma WhatsApp">WhatsApp</a></div>` : "-"}</td>
       <td class="p-3 font-semibold">${escapeHtml(calculateAge(member.date_of_birth))}</td>
       <td class="p-3">${escapeHtml(maritalStatusLabel(member.marital_status))}</td>
@@ -1301,6 +1309,7 @@ function openFamilyModal(member=null){
     document.getElementById("familyFirstName").value=member?.first_name||"";
     document.getElementById("familyMiddleName").value=member?.middle_name||"";
     document.getElementById("familyLastName").value=member?.last_name||"";
+    document.getElementById("familyGender").value=member?.gender||"";
     document.getElementById("familyPhone").value=member?.phone||"";
     document.getElementById("familyDateOfBirth").value=member?.date_of_birth||"";
     document.getElementById("familyMaritalStatus").value=member?.marital_status||"";
@@ -1324,6 +1333,7 @@ async function saveFamilyMember(){
         first_name:document.getElementById("familyFirstName").value.trim(),
         middle_name:document.getElementById("familyMiddleName").value.trim(),
         last_name:document.getElementById("familyLastName").value.trim(),
+        gender:document.getElementById("familyGender").value||null,
         phone:document.getElementById("familyPhone").value.trim(),
         date_of_birth:document.getElementById("familyDateOfBirth").value||null,
         marital_status:document.getElementById("familyMaritalStatus").value||null,
