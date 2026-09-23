@@ -129,7 +129,7 @@ Umesahau neno siri?
 </button>
 </div>
 
-<p class="text-center text-xs text-slate-400 mt-7">© Mo'Nyakorema O'Rila 2026</p>
+<p class="text-center text-xs text-slate-400 mt-7">© Mo'Nyakorema O'Rila</p>
 </div>
 </section>
 
@@ -213,7 +213,7 @@ Umesahau neno siri?
 </div>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
 <div class="bg-white rounded-xl shadow p-5">
 <p class="text-slate-500 text-sm">Idadi ya Wanafamilia</p>
 <p id="dashboardMembers" class="text-3xl font-bold mt-2">0</p>
@@ -753,6 +753,22 @@ let lastSessionValidationAt = 0;
 let sessionValidationTimer = null;
 const SESSION_VALIDATION_INTERVAL = 5 * 60 * 1000;
 const ALLOWED_ROLES = ["Administrator","Mwenyekiti","Katibu","Mhasibu","Mwanafamilia"];
+const APP_PAGE_STORAGE_KEY = "monyakorema_current_page_v1";
+
+function getSavedAppPage(){
+    try{
+        const page=localStorage.getItem(APP_PAGE_STORAGE_KEY);
+        return page || "dashboard";
+    }catch(error){
+        console.warn("Haikuweza kusoma ukurasa ulihifadhiwa:",error);
+        return "dashboard";
+    }
+}
+
+function saveAppPage(page){
+    try{ localStorage.setItem(APP_PAGE_STORAGE_KEY,page); }
+    catch(error){ console.warn("Haikuweza kuhifadhi ukurasa wa sasa:",error); }
+}
 
 function money(value){
     return new Intl.NumberFormat("sw-TZ").format(Number(value || 0));
@@ -881,7 +897,9 @@ async function loadApplication(user){
     document.getElementById("accountRole").textContent=profile.role||"-";
 
     applyRolePermissions();
-    showPage("dashboard");
+    // Baada ya refresh, rudisha mtumiaji kwenye menyu aliyokuwa nayo.
+    const savedPage=getSavedAppPage();
+    showPage(savedPage);
 
     await Promise.allSettled([
         loadContributionTarget(),
@@ -1009,6 +1027,10 @@ function showPage(page){
     const admin=currentProfile?.role==="Administrator";
     if((page==="users" || page==="settings" || page==="v23audit") && !admin){
         page="dashboard";
+    }
+    // Hifadhi ukurasa wa mwisho ili refresh isikurudishe Dashboard moja kwa moja.
+    if(currentUser && currentProfile && currentProfile.is_active===true){
+        saveAppPage(page);
     }
     if(!currentUser || !currentProfile || currentProfile.is_active!==true){
         page="dashboard";
@@ -1196,6 +1218,7 @@ async function loadFamilyMembers(attempt=1){
         const {data,error}=await supabaseClient
             .from("family_members")
             .select("id,first_name,middle_name,last_name,phone,email,gender,date_of_birth,marital_status,life_status,address,relationship,is_active,created_at,updated_at")
+            .eq("is_active",true)
             .order("id",{ascending:true});
 
         if(error) throw error;
@@ -1371,15 +1394,26 @@ async function deleteFamily(id){
     }
     if(!confirm("Una uhakika unataka kufuta mwanachama huyu?")) return;
 
-    const {error}=await supabaseClient.from("family_members").delete().eq("id",id);
+    try{
+        ensureClient();
+        // Tunatumia soft delete kwa sababu kumbukumbu za Msaada wa Maafa
+        // zinaweza kuwa bado zinarejea kwenye family_members.id.
+        // Hii inalinda historia ya miamala na kuzuia kuvunjika kwa foreign key.
+        const {error}=await supabaseClient
+            .from("family_members")
+            .update({is_active:false,updated_by:currentUser?.id})
+            .eq("id",id)
+            .eq("is_active",true);
 
-    if(error){
-        alert("Imeshindikana kufuta: "+error.message);
-        return;
+        if(error) throw error;
+
+        alert("Mwanafamilia ameondolewa kwenye orodha kikamilifu.");
+        await loadFamilyMembers();
+        await loadDashboard();
+    }catch(e){
+        console.error(e);
+        alert("Imeshindikana kufuta: "+(e?.message||e));
     }
-
-    await loadFamilyMembers();
-    await loadDashboard();
 }
 
 
@@ -1433,7 +1467,7 @@ async function payDisaster(id){
 }
 
 async function editDisaster(id){openDisasterModal(id);}
-async function deleteDisaster(id){if(currentProfile?.role!=='Administrator'){alert('Administrator pekee ndiye anayeruhusiwa kufuta.');return;}if(!confirm('Una uhakika unataka kufuta kumbukumbu hii?'))return;const {error}=await supabaseClient.from('disaster_assistance').update({is_deleted:true,updated_by:currentUser?.id}).eq('id',id);if(error){alert(error.message);return;}await loadDisasterAssistance();}
+async function deleteDisaster(id){if(currentProfile?.role!=='Administrator'){alert('Administrator pekee ndiye anayeruhusiwa kufuta.');return;}if(!confirm('Una uhakika unataka kufuta kumbukumbu hii?'))return;try{ensureClient();const {error}=await supabaseClient.rpc('admin_soft_delete_disaster_assistance',{p_id:Number(id)});if(error)throw error;alert('Kumbukumbu ya msaada imefutwa kikamilifu.');await loadDisasterAssistance();await loadFinanceDashboard();await loadDashboard();}catch(e){console.error(e);alert('Imeshindikana kufuta msaada: '+(e?.message||e));}}
 function exportDisasterCSV(){const rows=disasterAssistance||[];const data=[['Tarehe','Mwanafamilia','Aina ya maafa','Maelezo','Kiasi','Hali','Malipo','Risiti'],...rows.map(x=>[x.assistance_date,x.member_name,x.disaster_type,x.description,x.amount,x.status,x.payment_status||'Haijalipwa',x.receipt_number])];const csv='\ufeff'+data.map(r=>r.map(financeCsvCell).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='ripoti-maafa-'+new Date().toISOString().slice(0,10)+'.csv';a.click();}
 function printDisasterReport(){const rows=disasterAssistance||[];const w=window.open('','_blank');if(!w){alert('Ruhusu pop-up ili kuchapisha.');return;}w.document.write(`<html><head><title>Ripoti ya Maafa na Misaada</title><style>body{font-family:Arial;padding:25px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px}th{background:#eee}.n{text-align:right}</style></head><body><h2>Familia ya Mo'Nyakorema O'Rila</h2><h3>Ripoti ya Maafa na Misaada</h3><table><tr><th>Tarehe</th><th>Mwanafamilia</th><th>Maafa</th><th>Kiasi</th><th>Hali</th></tr>${rows.map(x=>`<tr><td>${escapeHtml(x.assistance_date||'')}</td><td>${escapeHtml(x.member_name||'')}</td><td>${escapeHtml(x.disaster_type||'')}</td><td class="n">TZS ${money(x.amount)}</td><td>${escapeHtml(x.status||'')}</td></tr>`).join('')}</table>
 </body></html>`);w.document.close();setTimeout(()=>w.print(),300);}
@@ -1493,7 +1527,7 @@ function openExpenseModal(id=null){ if(!['Administrator','Mhasibu'].includes(cur
 function closeExpenseModal(){const m=document.getElementById('expenseModal');m.classList.add('hidden');m.classList.remove('flex');}
 async function editExpense(id){ openExpenseModal(id); }
 async function saveExpense(e){e.preventDefault();ensureClient();if(!['Administrator','Mhasibu'].includes(currentProfile?.role)){alert('Huna ruhusa ya kurekodi matumizi.');return;}const id=document.getElementById('expenseId').value;const payload={expense_date:document.getElementById('expenseDate').value,category:document.getElementById('expenseCategory').value.trim(),description:document.getElementById('expenseDescription').value.trim(),amount:Number(document.getElementById('expenseAmount').value),payment_method:document.getElementById('expensePayment').value.trim(),updated_by:currentUser?.id};let result;if(id){result=await supabaseClient.from('fund_expenses').update(payload).eq('id',id);}else{result=await supabaseClient.from('fund_expenses').insert({...payload,created_by:currentUser?.id});}if(result.error){const msg=String(result.error.message||'');if(msg.toLowerCase().includes('salio')||msg.toLowerCase().includes('check'))alert('Matumizi yamekataliwa: salio la mfuko halitoshi kwa kiasi hiki.');else alert('Imeshindikana kuhifadhi: '+msg);return;}closeExpenseModal();e.target.reset();await loadFinanceDashboard();}
-async function deleteExpense(id){if(currentProfile?.role!=='Administrator'){alert('Administrator pekee ndiye anayeruhusiwa kufuta matumizi.');return;}if(!confirm('Una uhakika unataka kufuta matumizi haya?'))return;const {error}=await supabaseClient.from('fund_expenses').update({is_deleted:true,updated_by:currentUser?.id}).eq('id',id);if(error){alert('Imeshindikana kufuta: '+error.message);return;}await loadFinanceDashboard();}
+async function deleteExpense(id){if(currentProfile?.role!=='Administrator'){alert('Administrator pekee ndiye anayeruhusiwa kufuta matumizi.');return;}if(!confirm('Una uhakika unataka kufuta matumizi haya?'))return;try{ensureClient();const {error}=await supabaseClient.from('fund_expenses').delete().eq('id',Number(id));if(error)throw error;alert('Matumizi yamefutwa kikamilifu.');await loadFinanceDashboard();await loadDashboard();}catch(e){console.error(e);alert('Imeshindikana kufuta: '+(e?.message||e));}}
 function financeCsvCell(v){return '"'+String(v??'').replaceAll('"','""')+'"';}
 function exportFinanceCSV(){const rows=window.financeExpenses||[];const data=[['Tarehe','Aina','Maelezo','Kiasi','Njia ya malipo'],...rows.map(r=>[r.expense_date,r.category,r.description,r.amount,r.payment_method])];const csv='\ufeff'+data.map(r=>r.map(financeCsvCell).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='ripoti-matumizi-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(a.href);}
 function printFinanceReport(){
@@ -1620,7 +1654,7 @@ async function loadReports(){
             people[key].amount+=Number(r.amount||0); people[key].count++;
         });
         if(topBox) topBox.innerHTML=Object.values(people).sort((a,b)=>b.amount-a.amount).slice(0,10)
-            .map((x,i)=>`<div class="flex items-center justify-between gap-3 border-b last:border-0 pb-2 mb-2"><span><b>${i+1}. ${escapeHtml(x.name)}</b><span class="block text-xs text-slate-500">${x.count} mchango${x.count===1?'':'o'}${x.phone?' • '+escapeHtml(x.phone):''}</span></span><b>${reportMoney(x.amount)}</b></div>`).join('') || '<p class="text-slate-500 text-sm">Hakuna wachangiaji katika kipindi hiki.</p>';
+            .map((x,i)=>`<div class="flex items-center justify-between gap-3 border-b last:border-0 pb-2 mb-2"><span><b>${i+1}. ${escapeHtml(x.name)}</b><span class="block text-xs text-slate-500">${x.count} ${x.count===1?'mchango':'michango'}${x.phone?' • '+escapeHtml(x.phone):''}</span></span><b>${reportMoney(x.amount)}</b></div>`).join('') || '<p class="text-slate-500 text-sm">Hakuna wachangiaji katika kipindi hiki.</p>';
 
         if(table) table.innerHTML=rows.length?rows.map(r=>`<tr class="border-t"><td class="p-3">${escapeHtml(r.contribution_date||'-')}</td><td class="p-3">${escapeHtml(r.receipt_number||'-')}</td><td class="p-3">${escapeHtml([r.first_name,r.middle_name,r.last_name].filter(Boolean).join(' ')||r.phone||'-')}</td><td class="p-3">${escapeHtml(r.contributor_type||'-')}</td><td class="p-3 text-right font-bold">${reportMoney(r.amount)}</td></tr>`).join(''):'<tr><td colspan="5" class="p-6 text-center text-slate-500">Hakuna michango katika kipindi hiki.</td></tr>';
 
@@ -2597,6 +2631,7 @@ async function logout(){
     }
     currentUser=null;
     currentProfile=null;
+    try{ localStorage.removeItem(APP_PAGE_STORAGE_KEY); }catch(error){}
     document.getElementById("app").classList.add("hidden");
     document.getElementById("loginPage").classList.remove("hidden");
     document.getElementById("loginPassword").value="";
