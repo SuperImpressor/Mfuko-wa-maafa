@@ -305,6 +305,36 @@ Umesahau neno siri?
 </table>
 </div>
 </div>
+
+<div class="bg-white rounded-xl shadow mt-6 overflow-hidden">
+  <div class="p-4 border-b">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+      <div>
+        <h3 class="text-lg font-bold">Hali ya Michango ya Kila Mwanafamilia</h3>
+        <p class="text-sm text-slate-500 mt-1">Kila mwanafamilia anatakiwa kuchangia TZS 10,000 kwa mwezi. Deni linaonyeshwa kwa miezi iliyokwisha, na ziada inaonyesha kiasi kilichozidi wajibu huo.</p>
+      </div>
+      <div class="w-full lg:w-72">
+        <label class="text-sm font-semibold">Kiasi cha kupendekeza kukatwa kwenye maafa (TZS)</label>
+        <input id="disasterDeductionProposal" type="number" min="0" step="1" value="0" oninput="renderFamilyContributionStatus()" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Mfano: 5000">
+        <p class="text-xs text-slate-500 mt-1">Hiki ni kiasi cha mapendekezo kwa kila aliyechanga; hakifuti wala kubadilisha rekodi ya mchango.</p>
+      </div>
+    </div>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-slate-100"><tr>
+        <th class="text-left p-3">Mwanafamilia</th>
+        <th class="text-right p-3">Miezi Iliyokwisha</th>
+        <th class="text-right p-3">Anachodaiwa</th>
+        <th class="text-right p-3">Alichangia</th>
+        <th class="text-right p-3">Ziada</th>
+        <th class="text-right p-3">Makato ya Pendekezo</th>
+        <th class="text-right p-3">Salio Baada ya Makato</th>
+      </tr></thead>
+      <tbody id="familyContributionStatusTable"></tbody>
+    </table>
+  </div>
+</div>
 </section>
 
 <section id="page-finance" class="page hidden">
@@ -783,6 +813,8 @@ let familyMembers = [];
 let contributions = [];
 let users = [];
 let contributionTarget = 0;
+const FAMILY_MONTHLY_CONTRIBUTION = 10000;
+let familyContributionStatusRows = [];
 let sessionValidationInProgress = false;
 let lastSessionValidationAt = 0;
 let sessionValidationTimer = null;
@@ -1446,6 +1478,7 @@ async function loadFamilyMembers(attempt=1){
 
         familyMembers=Array.isArray(data)?data:[];
         renderFamilyMembers();
+        await loadFamilyContributionStatus();
 
         if(typeof populateContributionFamilyMembers === "function") populateContributionFamilyMembers();
 
@@ -1473,6 +1506,65 @@ async function loadFamilyMembers(attempt=1){
         }
         return false;
     }
+}
+
+function getCompletedContributionMonths(member){
+    const created=member?.created_at ? new Date(member.created_at) : new Date();
+    if(Number.isNaN(created.getTime())) return 0;
+    const now=new Date();
+    // Wajibu unahesabiwa kuanzia mwezi wa kujiunga hadi mwezi uliopita.
+    let endYear=now.getFullYear(), endMonth=now.getMonth()-1;
+    if(endMonth<0){endMonth=11;endYear--;}
+    const startYear=created.getFullYear(), startMonth=created.getMonth();
+    const months=(endYear-startYear)*12+(endMonth-startMonth)+1;
+    return Math.max(0,months);
+}
+
+function normalizeMemberNameForStatus(member){
+    return [member?.first_name,member?.middle_name,member?.last_name].filter(Boolean).join(' ').trim().toLowerCase().replace(/\s+/g,' ');
+}
+
+async function loadFamilyContributionStatus(){
+    const table=document.getElementById('familyContributionStatusTable');
+    if(!table)return;
+    if(!familyMembers.length){table.innerHTML='<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna wanafamilia.</td></tr>';return;}
+    table.innerHTML='<tr><td colspan="7" class="p-6 text-center text-slate-500">Inapakia hali ya michango...</td></tr>';
+    const {data,error}=await supabaseClient.from('contributions').select('id,family_member_id,first_name,middle_name,last_name,amount,contribution_date,is_deleted,contributor_type').eq('is_deleted',false).eq('contributor_type','Mwanafamilia');
+    if(error){
+        console.error('Family contribution status:',error);
+        table.innerHTML=`<tr><td colspan="7" class="p-6 text-center text-red-600">Imeshindikana kupakia hali ya michango: ${escapeHtml(error.message)}</td></tr>`;
+        return;
+    }
+    const byId=new Map(), byName=new Map();
+    (data||[]).forEach(row=>{
+        const amount=Number(row.amount||0);
+        const id=row.family_member_id?String(row.family_member_id):'';
+        const name=[row.first_name,row.middle_name,row.last_name].filter(Boolean).join(' ').trim().toLowerCase().replace(/\s+/g,' ');
+        if(id)byId.set(id,(byId.get(id)||0)+amount);
+        if(name)byName.set(name,(byName.get(name)||0)+amount);
+    });
+    familyContributionStatusRows=familyMembers.map(member=>{
+        const months=getCompletedContributionMonths(member);
+        const due=months*FAMILY_MONTHLY_CONTRIBUTION;
+        const total=byId.get(String(member.id)) ?? byName.get(normalizeMemberNameForStatus(member)) ?? 0;
+        const debt=Math.max(due-total,0);
+        const excess=Math.max(total-due,0);
+        return {member,months,due,total,debt,excess};
+    });
+    renderFamilyContributionStatus();
+}
+
+function renderFamilyContributionStatus(){
+    const table=document.getElementById('familyContributionStatusTable');
+    if(!table)return;
+    const proposal=Math.max(0,Number(document.getElementById('disasterDeductionProposal')?.value||0));
+    if(!familyContributionStatusRows.length){table.innerHTML='<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna taarifa za kuonyesha.</td></tr>';return;}
+    table.innerHTML=familyContributionStatusRows.map(x=>{
+        const deduction=x.total>0?Math.min(proposal,x.total):0;
+        const remaining=Math.max(x.total-deduction,0);
+        const status=x.debt>0?`<span class="text-red-600 font-semibold">Deni: TZS ${money(x.debt)}</span>`:(x.excess>0?`<span class="text-green-700 font-semibold">Ziada: TZS ${money(x.excess)}</span>`:'<span class="text-slate-500">Hakuna deni/ziada</span>');
+        return `<tr class="border-t hover:bg-slate-50">\n          <td class="p-3"><div class="font-semibold">${escapeHtml(fullName(x.member))}</div><div class="text-xs text-slate-500">${status}</div></td>\n          <td class="p-3 text-right">${x.months}</td>\n          <td class="p-3 text-right font-semibold ${x.debt>0?'text-red-600':''}">TZS ${money(x.debt)}</td>\n          <td class="p-3 text-right font-semibold">TZS ${money(x.total)}</td>\n          <td class="p-3 text-right font-semibold ${x.excess>0?'text-green-700':''}">TZS ${money(x.excess)}</td>\n          <td class="p-3 text-right">TZS ${money(deduction)}</td>\n          <td class="p-3 text-right font-bold ${remaining>0?'text-blue-700':'text-slate-500'}">TZS ${money(remaining)}</td>\n        </tr>`;
+    }).join('');
 }
 
 function calculateAge(dateOfBirth){
@@ -2228,6 +2320,7 @@ async function saveContribution(){
         last_name:document.getElementById("contributionLastName").value.trim(),
         phone:document.getElementById("contributionPhone").value.trim(),
         contributor_type:type,
+        family_member_id:type==="Mwanafamilia" ? Number(document.getElementById("contributionFamilyMember").value) : null,
         amount,
         payment_method:document.getElementById("paymentMethod").value,
         transaction_reference:document.getElementById("transactionReference").value.trim(),
@@ -2273,6 +2366,7 @@ async function saveContribution(){
         alert(editId?"Mabadiliko ya mchango yamehifadhiwa kikamilifu.":"Mchango umehifadhiwa kikamilifu.");
         closeContributionModal();
         await loadContributions();
+        await loadFamilyContributionStatus();
         await loadDashboard();
     }finally{
         unlockActionButton(saveButton,editId?"Hifadhi Mabadiliko":"Hifadhi Mchango");
