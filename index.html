@@ -306,33 +306,44 @@ Umesahau neno siri?
 </div>
 </div>
 
-<div class="bg-white rounded-xl shadow mt-6 overflow-hidden">
-  <div class="p-4 border-b">
-    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+<div class="bg-white rounded-xl shadow mt-6 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  <div>
+    <h3 class="text-lg font-bold">Hali ya Michango ya Kila Mwanafamilia</h3>
+    <p class="text-sm text-slate-500 mt-1">Bonyeza <strong>Michango</strong> kwenye mwanafamilia husika kuona deni, ziada na salio baada ya makato ya pendekezo.</p>
+  </div>
+  <button type="button" onclick="openFamilyContributionStatus()" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold">📊 Angalia Hali ya Michango</button>
+</div>
+
+<div id="familyContributionStatusModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+  <div class="bg-white rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl">
+    <div class="p-4 border-b flex items-start justify-between gap-3">
       <div>
-        <h3 class="text-lg font-bold">Hali ya Michango ya Kila Mwanafamilia</h3>
-        <p class="text-sm text-slate-500 mt-1">Kila mwanafamilia anatakiwa kuchangia TZS 10,000 kwa mwezi. Deni linaonyeshwa kwa miezi iliyokwisha, na ziada inaonyesha kiasi kilichozidi wajibu huo.</p>
+        <h3 class="text-xl font-bold">Hali ya Michango ya Kila Mwanafamilia</h3>
+        <p class="text-sm text-slate-500 mt-1">Kila mwanafamilia anatakiwa kuchangia TZS 10,000 kwa mwezi.</p>
       </div>
-      <div class="w-full lg:w-72">
+      <button type="button" onclick="closeFamilyContributionStatus()" class="text-2xl text-slate-500 hover:text-slate-800">&times;</button>
+    </div>
+    <div class="p-4 border-b bg-slate-50">
+      <div class="w-full sm:w-80">
         <label class="text-sm font-semibold">Kiasi cha kupendekeza kukatwa kwenye maafa (TZS)</label>
         <input id="disasterDeductionProposal" type="number" min="0" step="1" value="0" oninput="renderFamilyContributionStatus()" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Mfano: 5000">
-        <p class="text-xs text-slate-500 mt-1">Hiki ni kiasi cha mapendekezo kwa kila aliyechanga; hakifuti wala kubadilisha rekodi ya mchango.</p>
+        <p class="text-xs text-slate-500 mt-1">Hiki ni kiasi cha mapendekezo kwa kila aliyechanga; hakibadilishi rekodi ya mchango.</p>
       </div>
     </div>
-  </div>
-  <div class="overflow-x-auto">
-    <table class="w-full text-sm">
-      <thead class="bg-slate-100"><tr>
-        <th class="text-left p-3">Mwanafamilia</th>
-        <th class="text-right p-3">Miezi Iliyokwisha</th>
-        <th class="text-right p-3">Anachodaiwa</th>
-        <th class="text-right p-3">Alichangia</th>
-        <th class="text-right p-3">Ziada</th>
-        <th class="text-right p-3">Makato ya Pendekezo</th>
-        <th class="text-right p-3">Salio Baada ya Makato</th>
-      </tr></thead>
-      <tbody id="familyContributionStatusTable"></tbody>
-    </table>
+    <div class="overflow-auto max-h-[60vh]">
+      <table class="w-full text-sm">
+        <thead class="bg-slate-100 sticky top-0"><tr>
+          <th class="text-left p-3">Mwanafamilia</th>
+          <th class="text-right p-3">Miezi Iliyokwisha</th>
+          <th class="text-right p-3">Anachodaiwa</th>
+          <th class="text-right p-3">Alichangia</th>
+          <th class="text-right p-3">Ziada</th>
+          <th class="text-right p-3">Makato ya Pendekezo</th>
+          <th class="text-right p-3">Salio Baada ya Makato</th>
+        </tr></thead>
+        <tbody id="familyContributionStatusTable"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 </section>
@@ -566,7 +577,7 @@ Umesahau neno siri?
  class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-3 rounded-lg font-bold">
 Hariri Taarifa
 </button>
-<button type="button" onclick="showChangePassword()"
+<button id="changeOwnPasswordButton" type="button" onclick="showChangePassword()"
  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-bold">
 Badili Neno Siri
 </button>
@@ -1027,6 +1038,14 @@ function applyRolePermissions(){
     document.getElementById("addFamilyButton").classList.toggle("hidden",!canAddFamily);
     document.getElementById("addContributionButton").classList.toggle("hidden",!canAddContribution);
     const adb=document.getElementById("addDisasterButton"); if(adb) adb.classList.toggle("hidden",!["Administrator","Mhasibu","Katibu"].includes(role));
+
+    // Mwanafamilia haruhusiwi kubadili neno siri la akaunti yake mwenyewe.
+    const changeOwnPasswordButton=document.getElementById("changeOwnPasswordButton");
+    if(changeOwnPasswordButton){
+        const canChangeOwnPassword=!!role && role!=="Mwanafamilia";
+        changeOwnPasswordButton.classList.toggle("hidden",!canChangeOwnPassword);
+        changeOwnPasswordButton.disabled=!canChangeOwnPassword;
+    }
 }
 
 /* =========================================================
@@ -1554,12 +1573,38 @@ async function loadFamilyContributionStatus(){
     renderFamilyContributionStatus();
 }
 
-function renderFamilyContributionStatus(){
+function openFamilyContributionStatus(){
+    const modal=document.getElementById('familyContributionStatusModal');
+    if(!modal)return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    renderFamilyContributionStatus();
+}
+
+function closeFamilyContributionStatus(){
+    const modal=document.getElementById('familyContributionStatusModal');
+    if(!modal)return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function openFamilyContributionForMember(id){
+    const member=familyMembers.find(x=>String(x.id)===String(id));
+    if(!member){alert('Mwanafamilia hakupatikana.');return;}
+    const modal=document.getElementById('familyContributionStatusModal');
+    if(!modal)return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    renderFamilyContributionStatus(String(id));
+}
+
+function renderFamilyContributionStatus(selectedMemberId=null){
     const table=document.getElementById('familyContributionStatusTable');
     if(!table)return;
     const proposal=Math.max(0,Number(document.getElementById('disasterDeductionProposal')?.value||0));
-    if(!familyContributionStatusRows.length){table.innerHTML='<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna taarifa za kuonyesha.</td></tr>';return;}
-    table.innerHTML=familyContributionStatusRows.map(x=>{
+    const rows=selectedMemberId ? familyContributionStatusRows.filter(x=>String(x.member?.id)===String(selectedMemberId)) : familyContributionStatusRows;
+    if(!rows.length){table.innerHTML='<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna taarifa za kuonyesha.</td></tr>';return;}
+    table.innerHTML=rows.map(x=>{
         const deduction=x.total>0?Math.min(proposal,x.total):0;
         const remaining=Math.max(x.total-deduction,0);
         const status=x.debt>0?`<span class="text-red-600 font-semibold">Deni: TZS ${money(x.debt)}</span>`:(x.excess>0?`<span class="text-green-700 font-semibold">Ziada: TZS ${money(x.excess)}</span>`:'<span class="text-slate-500">Hakuna deni/ziada</span>');
@@ -1615,14 +1660,14 @@ function renderFamilyMembers(list=familyMembers){
       <td class="p-3">${member.date_of_birth?new Date(member.date_of_birth+"T00:00:00").toLocaleDateString("sw-TZ"):"-"}</td>
       <td class="p-3">${escapeHtml(lifeStatusLabel(member.life_status))}</td>
       <td class="p-3">
-      ${["Administrator","Katibu"].includes(currentProfile?.role)?`
-        <div class="flex items-center justify-end gap-4 whitespace-nowrap">
-          <button type="button" onclick="openFamilyLedger('${escapeHtml(member.id)}')" class="text-emerald-600 hover:underline">Historia</button>
-          <button type="button" onclick="editFamily('${escapeHtml(member.id)}')" class="text-blue-600 hover:underline">Hariri</button>
-          ${currentProfile?.role==="Administrator"?`
-          <button type="button" onclick="deleteFamily('${escapeHtml(member.id)}')" class="text-red-600 hover:underline">Futa</button>`:""}
+        <div class="flex flex-wrap items-center justify-end gap-3 whitespace-nowrap">
+          <button type="button" onclick="openFamilyContributionForMember('${escapeHtml(member.id)}')" class="text-emerald-600 hover:underline font-semibold">Michango</button>
+          ${["Administrator","Katibu"].includes(currentProfile?.role)?`
+            <button type="button" onclick="openFamilyLedger('${escapeHtml(member.id)}')" class="text-violet-600 hover:underline">Historia</button>
+            <button type="button" onclick="editFamily('${escapeHtml(member.id)}')" class="text-blue-600 hover:underline">Hariri</button>
+            ${currentProfile?.role==="Administrator"?`<button type="button" onclick="deleteFamily('${escapeHtml(member.id)}')" class="text-red-600 hover:underline">Futa</button>`:""}
+          `:""}
         </div>
-      `:"-"}
       </td>
     </tr>`).join("");
 }
@@ -2815,6 +2860,10 @@ function validateStrongPassword(password){
 }
 
 function showChangePassword(){
+    if(currentProfile?.role==="Mwanafamilia"){
+        alert("Akaunti ya Mwanafamilia hairuhusiwi kubadili neno siri. Tafadhali wasiliana na Administrator.");
+        return;
+    }
     const modal=document.getElementById("passwordModal");
     if(!modal) return;
     document.getElementById("currentPassword").value="";
@@ -2833,6 +2882,11 @@ function closePasswordModal(){
 }
 
 async function changePassword(){
+    if(currentProfile?.role==="Mwanafamilia"){
+        alert("Akaunti ya Mwanafamilia hairuhusiwi kubadili neno siri. Tafadhali wasiliana na Administrator.");
+        closePasswordModal();
+        return;
+    }
     ensureClient();
     if(!currentUser){
         alert("Ingia kwanza kwenye akaunti yako.");
