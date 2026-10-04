@@ -96,6 +96,22 @@ body{font-family:Arial,sans-serif}
   #appSidebar{width:90vw}
 }
 </style>
+<style id="v85-mobile-polish">
+@media (max-width:640px){
+  #reportQuickActionsV78 .flex.flex-wrap{width:100%;}
+  #reportQuickActionsV78 button{flex:1 1 calc(50% - .5rem);min-height:40px;}
+  #reportFollowupTable th,#reportFollowupTable td{white-space:nowrap;}
+  #reportFollowupTable td:last-child{position:sticky;right:0;background:#fff;}
+}
+</style>
+
+<style>
+@media(max-width:640px){
+  #page-finance .flex.items-center.justify-between, #page-disaster .flex.items-center.justify-between{gap:.75rem;flex-wrap:wrap;}
+  #page-finance button, #page-disaster button{min-height:42px;}
+  #page-finance table th:last-child,#page-finance table td:last-child,#page-disaster table th:last-child,#page-disaster table td:last-child{white-space:nowrap;}
+}
+</style>
 </head>
 
 <body class="min-h-screen bg-slate-100 text-slate-800">
@@ -254,9 +270,13 @@ Umesahau neno siri?
 <main class="app-main max-w-7xl mx-auto p-4">
 
 <section id="page-dashboard" class="page">
-<div class="mb-6">
+<div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+<div>
 <h2 class="text-2xl font-bold">Dashboard</h2>
 <p class="text-slate-500">Karibu kwenye mfumo wa Mo'Nyakorema O'Rila.</p>
+<p id="dashboardLastUpdated" class="text-xs text-slate-400 mt-1">Taarifa zinapakia...</p>
+</div>
+<button onclick="refreshDashboard()" class="shrink-0 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-bold">↻ Sasisha</button>
 </div>
 <div class="bg-white rounded-xl shadow p-5 mb-6">
 <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
@@ -307,9 +327,45 @@ Umesahau neno siri?
 <p id="dashboardStakeholderAmount" class="text-xs text-slate-500 mt-1">TZS 0</p>
 </div>
 </div>
-<div class="bg-white rounded-xl shadow mt-6 p-5">
-<h3 class="font-bold text-lg mb-4">Karibu</h3>
-<p class="text-slate-600">Tumia menyu hapo juu upande wa kushoto.</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">Matumizi ya Mfuko</p><p id="dashboardExpenses" class="text-2xl font-bold mt-2">TZS 0</p></div>
+<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">Misaada Iliyolipwa</p><p id="dashboardDisasterPaid" class="text-2xl font-bold mt-2">TZS 0</p></div>
+<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">Jumla ya Makato</p><p id="dashboardDeductions" class="text-2xl font-bold mt-2">TZS 0</p></div>
+<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">Mapato Halisi Baada ya Matumizi</p><p id="dashboardNet" class="text-2xl font-bold mt-2">TZS 0</p></div>
+</div>
+
+<div class="mt-6">
+<div class="flex items-center justify-between gap-3 mb-3">
+<div><h3 class="font-bold text-lg">Muhtasari wa Hali ya Michango</h3><p class="text-sm text-slate-500">Hali ya jumla ya wajibu wa michango kuanzia September 2026 hadi mwezi wa sasa.</p></div>
+<button onclick="showPage('contributions')" class="text-blue-600 font-bold text-sm">Angalia Hali ya Michango →</button>
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">Waliokamilisha Wajibu</p><p id="dashboardContribComplete" class="text-3xl font-bold mt-2">0</p><p class="text-xs text-slate-500 mt-1">Hawana deni la mchango</p></div>
+<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">Wenye Deni</p><p id="dashboardContribDebtors" class="text-3xl font-bold mt-2">0</p><p class="text-xs text-slate-500 mt-1">Wana deni la mchango</p></div>
+<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">Jumla ya Madeni</p><p id="dashboardContribDebtAmount" class="text-2xl font-bold mt-2">TZS 0</p><p class="text-xs text-slate-500 mt-1">Madeni ya michango yaliyopo</p></div>
+<div class="bg-white rounded-xl shadow p-5"><p class="text-slate-500 text-sm">Wenye Ziada</p><p id="dashboardContribExcess" class="text-3xl font-bold mt-2">0</p><p id="dashboardContribExcessAmount" class="text-xs text-slate-500 mt-1">TZS 0</p></div>
+</div>
+</div>
+
+<div class="mt-6 bg-white rounded-xl shadow p-5">
+<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+<div><h3 class="font-bold text-lg">Hali ya Mchango wa Mwezi Huu</h3><p id="dashboardCurrentMonthLabel" class="text-sm text-slate-500 mt-1">Inapakia...</p><p class="text-xs text-slate-400 mt-1">Sehemu hii ni ya mwezi huu pekee; muhtasari hapo juu unaonyesha hali ya jumla hadi sasa.</p></div>
+<span id="dashboardCurrentMonthRate" class="text-2xl font-bold text-blue-700">0%</span>
+</div>
+<div class="w-full h-4 bg-slate-200 rounded-full overflow-hidden"><div id="dashboardCurrentMonthBar" class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width:0%"></div></div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+<div class="rounded-lg bg-blue-50 p-4"><p class="text-xs text-slate-500">Wajibu wa mwezi</p><p id="dashboardCurrentMonthDue" class="text-xl font-bold mt-1">TZS 0</p></div>
+<div class="rounded-lg bg-emerald-50 p-4"><p class="text-xs text-slate-500">Malipo yaliyorekodiwa</p><p id="dashboardCurrentMonthPaid" class="text-xl font-bold mt-1">TZS 0</p></div>
+<div class="rounded-lg bg-green-50 p-4"><p class="text-xs text-slate-500">Waliokamilisha</p><p id="dashboardCurrentMonthPaidMembers" class="text-2xl font-bold mt-1">0</p><p id="dashboardCurrentMonthMembersSummary" class="text-xs text-slate-500 mt-1">0 kati ya 0 wenye wajibu</p></div>
+<div class="rounded-lg bg-amber-50 p-4"><p class="text-xs text-slate-500">Wajibu uliobaki</p><p id="dashboardCurrentMonthRemaining" class="text-xl font-bold mt-1">TZS 0</p></div>
+</div>
+</div>
+<div class="bg-white rounded-xl shadow mt-6 overflow-hidden">
+<div class="p-5 border-b flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+<div><h3 class="font-bold text-lg">Shughuli za Hivi Karibuni</h3><p class="text-sm text-slate-500 mt-1">Miamala ya mwisho iliyorekodiwa kwenye mfumo.</p></div>
+<button onclick="showPage('reports')" class="text-blue-600 font-bold text-sm">Angalia Ripoti →</button>
+</div>
+<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="text-left p-3">Tarehe</th><th class="text-left p-3">Aina</th><th class="text-left p-3">Maelezo</th><th class="text-right p-3">Kiasi</th></tr></thead><tbody id="dashboardRecentActivity"><tr><td colspan="4" class="p-6 text-center text-slate-500">Inapakia...</td></tr></tbody></table></div>
 </div>
 </section>
 
@@ -322,16 +378,27 @@ Umesahau neno siri?
 </div>
 <p class="text-slate-500 text-sm">Orodha ya wanafamilia.</p>
 </div>
+<div class="flex flex-wrap gap-2">
+<button type="button" onclick="refreshFamilyPage()" id="refreshFamilyButton" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-bold">↻ Sasisha</button>
+<button type="button" onclick="exportFamilyCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold">
+↓ Pakua CSV
+</button>
 <button id="addFamilyButton" onclick="openFamilyModal()"
  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold">
 + Ongeza Mwanafamilia
 </button>
 </div>
-<div class="bg-white rounded-xl shadow overflow-hidden">
-<div class="p-4 border-b">
-<input id="familySearch" oninput="filterFamily()"
- class="w-full border rounded-lg px-4 py-3" placeholder="Tafuta jina au simu...">
 </div>
+<div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-5">
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">👥 Jumla</p><p id="familyStatTotal" class="text-2xl font-bold mt-1">0</p></div>
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">👨 Wanaume</p><p id="familyStatMale" class="text-2xl font-bold mt-1">0</p></div>
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">👩 Wanawake</p><p id="familyStatFemale" class="text-2xl font-bold mt-1">0</p></div>
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">💚 Waliopo Hai</p><p id="familyStatAlive" class="text-2xl font-bold mt-1">0</p></div>
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">📱 Wenye Simu</p><p id="familyStatPhone" class="text-2xl font-bold mt-1">0</p></div>
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">⚪ Hali Haijaainishwa</p><p id="familyStatUnknownLife" class="text-2xl font-bold mt-1">0</p></div>
+</div>
+<div class="bg-white rounded-xl shadow overflow-hidden">
+<div class="p-4 border-b bg-slate-50"><div class="grid grid-cols-1 md:grid-cols-4 gap-3"><input id="familySearch" oninput="filterFamily()" class="w-full border rounded-lg px-4 py-3 bg-white" placeholder="Tafuta jina, simu, ndoa au umri..." aria-label="Tafuta mwanafamilia kwa jina au simu"><select id="familyGenderFilter" onchange="filterFamily()" class="w-full border rounded-lg px-4 py-3 bg-white"><option value="">Jinsia zote</option><option value="me">Wanaume (Me)</option><option value="ke">Wanawake (Ke)</option></select><select id="familyLifeFilter" onchange="filterFamily()" class="w-full border rounded-lg px-4 py-3 bg-white"><option value="">Hali zote</option><option value="Hai">Walio hai</option><option value="Amefariki">Waliofariki</option><option value="unknown">Haijaainishwa</option></select><button type="button" onclick="clearFamilyFilters()" class="w-full bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 px-4 py-3 rounded-lg font-bold">Futa vichujio</button></div><div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mt-2"><p id="familyFilterSummary" class="text-xs text-slate-500">Inaonyesha wanafamilia wote.</p><p id="familyLastUpdated" class="text-xs text-slate-500">Taarifa hazijasasishwa bado.</p></div></div>
 <div class="overflow-x-auto">
 <table class="w-full text-sm border-collapse">
 <thead class="bg-slate-100">
@@ -399,6 +466,7 @@ Umesahau neno siri?
 <div class="bg-white rounded-xl shadow p-4 mb-5"><div class="grid grid-cols-1 sm:grid-cols-3 gap-3"><div><label class="text-sm font-semibold">Kuanzia</label><input id="financeFrom" type="date" class="w-full border rounded-lg px-3 py-2 mt-1"></div><div><label class="text-sm font-semibold">Hadi</label><input id="financeTo" type="date" class="w-full border rounded-lg px-3 py-2 mt-1"></div><div class="flex items-end"><button onclick="loadFinanceDashboard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold">Onyesha Taarifa</button></div></div></div>
 <div id="financeSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5"></div>
 <div class="bg-white rounded-xl shadow p-5 mb-5"><div class="flex items-center justify-between mb-3"><div><h3 class="font-bold">Mwenendo wa Fedha</h3><p class="text-xs text-slate-500">Muhtasari wa michango, matumizi na misaada kwa kipindi.</p></div></div><div class="chart-box"><canvas id="financeChart"></canvas></div></div>
+<div id="financeReconciliation" class="bg-white rounded-xl shadow p-5 mb-5"><div class="text-sm text-slate-500">Inakagua ulinganifu wa salio...</div></div>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5"><div class="bg-white rounded-xl shadow p-5"><h3 class="font-bold mb-4">Muhtasari wa Mapato na Matumizi</h3><div id="financeBreakdown" class="space-y-3"></div><p class="text-xs text-slate-500 mt-4">Salio halisi linatoka moja kwa moja kwenye database: Michango − Matumizi − Misaada iliyolipwa.</p></div><div class="bg-white rounded-xl shadow p-5"><h3 class="font-bold mb-4">Matumizi na Misaada ya Maafa</h3><div id="expenseBreakdown" class="space-y-3"></div></div></div>
 <div class="bg-white rounded-xl shadow mt-5 overflow-hidden"><div class="p-4 border-b flex items-center justify-between"><h3 class="font-bold">Matumizi yaliyorekodiwa</h3><div class="flex gap-2 flex-wrap"><button onclick="exportFinanceCSV()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg font-bold">CSV</button><button onclick="printFinanceReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold">Chapisha</button><button id="addExpenseButton" onclick="openExpenseModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-bold">+ Ongeza Matumizi</button></div></div><div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="text-left p-3">Tarehe</th><th class="text-left p-3">Aina</th><th class="text-left p-3">Maelezo</th><th class="text-right p-3">Kiasi</th><th class="text-right p-3">Vitendo</th></tr></thead><tbody id="expenseTable"></tbody></table></div></div>
 </section>
@@ -440,16 +508,99 @@ Umesahau neno siri?
 <div><label class="text-sm font-semibold">Kuanzia</label><input id="reportFrom" type="date" class="w-full border rounded-lg px-3 py-2 mt-1"></div>
 <div><label class="text-sm font-semibold">Hadi</label><input id="reportTo" type="date" class="w-full border rounded-lg px-3 py-2 mt-1"></div>
 <div class="flex items-end gap-2 flex-wrap"><button onclick="loadReports()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold">Changanua</button><button onclick="clearReportFilters()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded-lg font-bold">Ondoa Tarehe</button><button onclick="exportReportCSV()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold">CSV</button><button onclick="printReport()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold">Chapisha</button></div>
+</div>
+<div class="mt-3 flex flex-wrap items-center gap-2">
+<span class="text-xs font-semibold text-slate-500 mr-1">Vipindi vya haraka:</span>
+<button onclick="setReportQuickFilter('week')" class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">Wiki hii</button>
+<button onclick="setReportQuickFilter('month')" class="px-3 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold">Mwezi huu</button>
+<button onclick="setReportQuickFilter('quarter')" class="px-3 py-1.5 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold">Miezi 3</button>
+<button onclick="setReportQuickFilter('year')" class="px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold">Mwaka huu</button>
 </div></div>
 <div id="reportSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5"></div>
+<div class="bg-white rounded-xl shadow p-5 mb-5">
+  <div class="flex items-center justify-between gap-3 mb-4">
+    <div><h3 class="font-bold">Muhtasari wa Utendaji wa Kipindi</h3><p class="text-xs text-slate-500 mt-1">Ulinganisho wa fedha zilizokusanywa na wajibu wa kipindi kilichochaguliwa.</p></div>
+    <span id="reportCollectionRate" class="text-lg font-bold text-blue-700">0%</span>
+  </div>
+  <div id="reportPeriodInsights" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"></div>
+</div>
 <div id="reportContributionLedger" class="bg-white rounded-xl shadow mt-5 p-5">
 <h3 class="font-bold mb-2">Hali ya Mchango ya Wanafamilia</h3><p class="text-xs text-slate-500 mb-4">Ledger hii inaonyesha wajibu wa kila mwanafamilia kuanzia mwanzo wa michango (September 2026) hadi mwezi wa sasa. Vichujio vya tarehe hapo juu vinaathiri ripoti za kipindi, si hali ya jumla ya wajibu wa mchango.</p>
 <div id="reportContributionLedgerSummary" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5"></div>
 <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="text-left p-3">Mwanafamilia</th><th class="text-center p-3">Miezi ya kuchangia</th><th class="text-center p-3">Wajibu</th><th class="text-center p-3">Kiasi alichochanga</th><th class="text-center p-3">Kiasi anachodaiwa</th><th class="text-center p-3">Ziada</th><th class="text-center p-3">Makato</th><th class="text-center p-3">Salio</th></tr></thead><tbody id="reportContributionLedgerTable"></tbody></table></div>
 </div>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 <div class="bg-white rounded-xl shadow p-5"><h3 class="font-bold mb-4">Hali ya Uhai ya Wanafamilia</h3><div id="reportFamilyBreakdown" class="space-y-3"></div></div>
+<div class="bg-white rounded-xl shadow p-5"><h3 class="font-bold mb-4">Jinsia za Wanafamilia</h3><div id="reportGenderBreakdown" class="space-y-3"></div></div>
 <div class="bg-white rounded-xl shadow p-5"><h3 class="font-bold mb-4">Muhtasari wa Michango</h3><div id="reportContributionBreakdown" class="space-y-3"></div></div>
+</div>
+<div class="bg-white rounded-xl shadow mt-5 p-5">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+<div><h3 class="font-bold">Uwajibikaji wa Michango</h3><p class="text-xs text-slate-500 mt-1">Asilimia ya wanafamilia wenye wajibu uliokamilika dhidi ya wenye deni, kwa hali ya sasa.</p></div>
+<span id="reportContributionResponsibilityRate" class="text-2xl font-bold text-blue-700">0%</span>
+</div>
+<div class="w-full h-4 bg-slate-200 rounded-full overflow-hidden"><div id="reportContributionResponsibilityBar" class="h-full bg-blue-600 rounded-full transition-all duration-500" style="width:0%"></div></div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+<div class="rounded-lg bg-emerald-50 p-3"><p class="text-xs text-slate-500">Waliokamilisha</p><p id="reportResponsibilityComplete" class="font-bold mt-1">0</p></div>
+<div class="rounded-lg bg-red-50 p-3"><p class="text-xs text-slate-500">Wenye deni</p><p id="reportResponsibilityDebtors" class="font-bold mt-1">0</p></div>
+<div class="rounded-lg bg-amber-50 p-3"><p class="text-xs text-slate-500">Jumla ya deni</p><p id="reportResponsibilityDebt" class="font-bold mt-1">TZS 0</p></div>
+</div>
+</div>
+<div id="reportQuickActionsV78" class="bg-white rounded-xl shadow mt-5 p-5">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div><h3 class="font-bold">Muhtasari wa Haraka</h3><p class="text-xs text-slate-500 mt-1">Chagua kipindi ili kuangalia mwenendo wa michango kwa haraka.</p></div>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" onclick="loadReports()" class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">↻ Sasisha Ripoti</button>
+      <button type="button" onclick="printReport()" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold">🖨 Chapisha</button>
+      <button type="button" onclick="setReportQuickPeriodV78('month')" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold">Mwezi huu</button>
+      <button type="button" onclick="setReportQuickPeriodV78('quarter')" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold">Miezi 3</button>
+      <button type="button" onclick="setReportQuickPeriodV78('year')" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold">Mwaka huu</button>
+      <button type="button" onclick="clearReportFilters();" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold">Vipindi vyote</button>
+    </div>
+  </div>
+  <button id="reportRefreshButtonV85" type="button" onclick="loadReports()" class="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">↻ Sasisha</button><p id="reportRefreshV78" class="text-xs text-slate-400 mt-3">Ripoti husasishwa unapofunguliwa au kubadilisha kipindi.</p>
+</div>
+<div class="bg-white rounded-xl shadow mt-5 p-5">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+    <div><h3 class="font-bold">Wanaohitaji Ufuatiliaji wa Mchango</h3><p class="text-xs text-slate-500 mt-1">Orodha ya wanafamilia wenye deni la mchango kwa hali ya sasa. Tumia utafutaji kupata jina haraka.</p></div>
+    <div class="flex gap-2 items-center">
+      <span id="reportFollowupCount" class="px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-bold">0 wenye deni</span>
+      <button type="button" onclick="exportContributionFollowupCsv()" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">↓ CSV ya Kichujio</button>
+      <button type="button" onclick="printContributionFollowupV84()" class="px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold">🖨 Chapisha</button>
+    </div>
+  </div>
+  <div class="flex flex-col sm:flex-row gap-2 mb-3">
+    <input id="reportFollowupSearch" oninput="filterContributionFollowup()" type="search" placeholder="Tafuta jina la mwanafamilia..." class="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+    <button type="button" onclick="clearContributionFollowupSearchV86()" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">Futa utafutaji</button>
+  </div>
+  <div class="flex items-center justify-between gap-2 mb-3 text-xs text-slate-500">
+    <span>Matokeo yanayoonekana: <strong id="reportFollowupVisibleCountV86" class="text-slate-700">0</strong></span>
+    <span id="reportFollowupFilterSummaryV86" class="text-slate-400">Wenye Deni</span>
+  </div>
+  <div class="flex flex-wrap gap-2 mb-4" id="reportFollowupFiltersV79">
+    <button type="button" data-followup-filter="debt" onclick="setContributionFollowupFilterV79('debt')" class="px-3 py-1.5 rounded-lg bg-red-100 text-red-700 text-xs font-bold">Wenye Deni <span data-followup-count="debt" class="ml-1">(0)</span></button>
+    <button type="button" data-followup-filter="complete" onclick="setContributionFollowupFilterV79('complete')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">Waliokamilisha <span data-followup-count="complete" class="ml-1">(0)</span></button>
+    <button type="button" data-followup-filter="excess" onclick="setContributionFollowupFilterV79('excess')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">Wenye Ziada <span data-followup-count="excess" class="ml-1">(0)</span></button>
+    <button type="button" data-followup-filter="all" onclick="setContributionFollowupFilterV79('all')" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">Wote <span data-followup-count="all" class="ml-1">(0)</span></button>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+    <div class="rounded-lg bg-red-50 border border-red-100 px-3 py-2"><div class="text-[11px] text-red-600 font-semibold">Jumla ya Deni</div><div id="reportFollowupDebtTotalV83" class="font-bold text-red-700 mt-0.5">TZS 0</div></div>
+    <div class="rounded-lg bg-slate-50 border border-slate-100 px-3 py-2"><div class="text-[11px] text-slate-500 font-semibold">Wenye Deni</div><div id="reportFollowupDebtMembersV83" class="font-bold text-slate-700 mt-0.5">0</div></div>
+    <div class="rounded-lg bg-blue-50 border border-blue-100 px-3 py-2"><div class="text-[11px] text-blue-600 font-semibold">Deni la Wastani</div><div id="reportFollowupAverageDebtV83" class="font-bold text-blue-700 mt-0.5">TZS 0</div></div>
+  </div>
+  <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-100"><tr><th class="text-left p-3">Mwanafamilia</th><th class="text-right p-3">Miezi</th><th class="text-right p-3">Wajibu</th><th class="text-right p-3">Alicholipa</th><th class="text-right p-3">Deni</th><th class="text-center p-3">Hatua</th></tr></thead><tbody id="reportFollowupTable"></tbody></table></div>
+</div>
+<div class="bg-white rounded-xl shadow mt-5 p-5">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+    <div><h3 class="font-bold">Hali ya Mchango wa Mwezi Huu</h3><p class="text-xs text-slate-500 mt-1">Muhtasari wa wajibu na malipo ya mwezi wa sasa.</p></div>
+    <span id="currentMonthContributionLabel" class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">Mwezi huu</span>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class="rounded-lg bg-slate-50 p-4"><div class="text-xs text-slate-500">Wajibu</div><div id="currentMonthDue" class="text-xl font-bold mt-1">TZS 0</div></div>
+    <div class="rounded-lg bg-slate-50 p-4"><div class="text-xs text-slate-500">Kimekusanywa</div><div id="currentMonthPaid" class="text-xl font-bold mt-1">TZS 0</div></div>
+    <div class="rounded-lg bg-slate-50 p-4"><div class="text-xs text-slate-500">Waliolipa</div><div id="currentMonthPayers" class="text-xl font-bold mt-1">0</div></div>
+    <div class="rounded-lg bg-slate-50 p-4"><div class="text-xs text-slate-500">Bado hawajakamilisha</div><div id="currentMonthOutstanding" class="text-xl font-bold mt-1">TZS 0</div></div>
+  </div>
 </div>
 <div class="bg-white rounded-xl shadow mt-5 p-5"><div class="flex items-center justify-between gap-3 mb-4"><h3 class="font-bold">Mwenendo wa Michango kwa Mwezi</h3><span class="text-xs text-slate-500">Jumla kwa mwezi</span></div><div id="reportMonthlyBreakdown" class="space-y-3"></div></div>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-5">
@@ -467,6 +618,10 @@ Umesahau neno siri?
     <button id="v23TabHistory" class="v23-tab" onclick="v23SwitchTab('history')">Historia ya Miamala</button>
   </div>
   <div id="v23AuditPanel">
+    <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 mb-4">
+      <div class="font-bold">Audit Trail ni kumbukumbu ya ufuatiliaji</div>
+      <div class="text-sm mt-1">Rekodi hizi ni za kusoma na kufuatilia matukio. Mfumo hautoi kitufe cha kuzihariri au kuzifuta kwenye ukurasa huu.</div>
+    </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
       <div class="v23-kpi"><div class="text-xs text-slate-500">Matukio yaliyoonyeshwa</div><div id="v23AuditCount" class="n">0</div></div>
       <div class="v23-kpi"><div class="text-xs text-slate-500">Aliyeingia sasa</div><div id="v23AuditActor" class="font-bold mt-1">-</div></div>
@@ -475,14 +630,22 @@ Umesahau neno siri?
     <div class="bg-white rounded-xl shadow p-4 mb-4">
       <div class="v23-filter">
         <input id="v23AuditSearch" oninput="v23RenderAudit()" class="border rounded-lg px-3 py-2" placeholder="Tafuta mtumiaji, jedwali au ID...">
-        <select id="v23AuditAction" onchange="v23RenderAudit()" class="border rounded-lg px-3 py-2"><option value="">Vitendo vyote</option><option value="INSERT">Imeongezwa</option><option value="UPDATE">Imehaririwa</option><option value="DELETE">Imefutwa</option></select>
-        <select id="v23AuditTable" onchange="v23RenderAudit()" class="border rounded-lg px-3 py-2"><option value="">Majedwali yote</option><option value="contributions">Michango</option><option value="disaster_assistance">Msaada wa Maafa</option><option value="fund_expenses">Matumizi ya Mfuko</option><option value="family_members">Wanafamilia</option><option value="profiles">Profiles</option></select>
-        <button onclick="v23LoadAudit(true)" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 font-bold">Onyesha upya</button>
+        <select id="v23AuditAction" onchange="v23RenderAudit()" class="border rounded-lg px-3 py-2"><option value="">Vitendo vyote</option><option value="INSERT">Imeongezwa</option><option value="UPDATE">Imehaririwa</option><option value="DELETE">Imefutwa</option><option value="CHANGE_ROLE">Role imebadilishwa</option><option value="ENABLE_USER">Akaunti imewashwa</option><option value="DISABLE_USER">Akaunti imezimwa</option><option value="RESET_PASSWORD">Neno siri limebadilishwa</option></select>
+        <select id="v23AuditTable" onchange="v23RenderAudit()" class="border rounded-lg px-3 py-2"><option value="">Majedwali yote</option><option value="contributions">Michango</option><option value="disaster_assistance">Msaada wa Maafa</option><option value="fund_expenses">Matumizi ya Mfuko</option><option value="family_members">Wanafamilia</option><option value="profiles">Profiles</option><option value="auth.users">Akaunti za Auth</option></select>
+        <input id="v23AuditFrom" type="date" onchange="v23RenderAudit()" class="border rounded-lg px-3 py-2" title="Kuanzia tarehe">
+        <input id="v23AuditTo" type="date" onchange="v23RenderAudit()" class="border rounded-lg px-3 py-2" title="Mpaka tarehe">
+        <button onclick="v23ClearAuditFilters()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg px-3 py-2 font-bold">Futa vichujio</button>
+        <button onclick="v23LoadAudit(true)" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 font-bold">Onyesha upya</button><button onclick="v23ExportAuditCSV()" class="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-3 py-2 font-bold">Pakua CSV</button>
       </div>
     </div>
-    <div class="bg-white rounded-xl shadow overflow-hidden"><div class="overflow-x-auto"><table class="v23-table text-sm"><thead><tr><th>Tarehe/Muda</th><th>Mtumiaji</th><th>Kitendo</th><th>Jedwali</th><th>Record ID</th><th>Maelezo</th></tr></thead><tbody id="v23AuditBody"></tbody></table></div></div>
+    <div class="bg-white rounded-xl shadow overflow-hidden"><div class="p-3 border-b bg-slate-50 text-sm text-slate-600">Inaonyesha <span id="v23AuditVisibleCount" class="font-bold">0</span> kati ya <span id="v23AuditTotalCount" class="font-bold">0</span> matukio yaliyopakiwa.</div><div class="overflow-x-auto"><table class="v23-table text-sm"><thead><tr><th>Tarehe/Muda</th><th>Mtumiaji</th><th>Kitendo</th><th>Jedwali</th><th>Record ID</th><th>Maelezo</th></tr></thead><tbody id="v23AuditBody"></tbody></table></div></div>
   </div>
   <div id="v23HistoryPanel" class="hidden">
+    <div class="bg-blue-50 border border-blue-200 text-blue-900 rounded-xl p-4 mb-4">
+      <div class="font-bold">Historia ya Miamala ni ya fedha pekee</div>
+      <div class="text-sm mt-1">Inaonyesha michango, matumizi ya mfuko na misaada ya maafa. Matukio ya usimamizi wa akaunti kama kubadili role, kuwasha/kuzima akaunti na kubadili neno siri yanaendelea kubaki kwenye Audit Trail pekee.</div>
+      <div class="text-sm mt-1">Makato ya mwanachama yanayorekodiwa wakati wa malipo ya msaada wa maafa hayahesabiwi kama matumizi mengine ya ziada, ili kuepuka kupunguza salio mara mbili.</div>
+    </div>
     <div class="bg-white rounded-xl shadow p-4 mb-4">
       <div class="v23-filter">
         <input id="v23HistorySearch" oninput="v23RenderHistory()" class="border rounded-lg px-3 py-2" placeholder="Tafuta aina, mtumiaji, risiti au kumbukumbu...">
@@ -490,15 +653,15 @@ Umesahau neno siri?
         <input id="v23HistoryFrom" type="date" onchange="v23RenderHistory()" class="border rounded-lg px-3 py-2">
         <input id="v23HistoryTo" type="date" onchange="v23RenderHistory()" class="border rounded-lg px-3 py-2">
       </div>
-      <div class="flex gap-2 mt-3 flex-wrap"><button onclick="v23LoadHistory(true)" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 font-bold">Onyesha upya</button><button onclick="v23ExportHistoryCSV()" class="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-3 py-2 font-bold">Pakua CSV</button></div>
+      <div class="flex gap-2 mt-3 flex-wrap"><button onclick="v23ClearHistoryFilters()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg px-3 py-2 font-bold">Futa vichujio</button><button onclick="v23LoadHistory(true)" class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 font-bold">Onyesha upya</button><button onclick="v23ExportHistoryCSV()" class="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-3 py-2 font-bold">Pakua CSV</button></div>
     </div>
-    <div class="bg-white rounded-xl shadow overflow-hidden"><div class="overflow-x-auto"><table class="v23-table text-sm"><thead><tr><th>Tarehe</th><th>Aina</th><th>Kitendo</th><th>Mtumiaji</th><th>Risiti/Rejea</th><th class="text-right">Kiasi</th><th>Maelezo</th></tr></thead><tbody id="v23HistoryBody"></tbody></table></div></div>
+    <div class="bg-white rounded-xl shadow overflow-hidden"><div class="p-3 border-b bg-slate-50 text-sm text-slate-600">Inaonyesha <span id="v23HistoryVisibleCount" class="font-bold">0</span> kati ya <span id="v23HistoryTotalCount" class="font-bold">0</span> miamala iliyopakiwa.</div><div class="overflow-x-auto"><table class="v23-table text-sm"><thead><tr><th>Tarehe</th><th>Aina</th><th>Kitendo</th><th>Mtumiaji</th><th>Risiti/Rejea</th><th class="text-right">Kiasi</th><th>Maelezo</th></tr></thead><tbody id="v23HistoryBody"></tbody></table></div></div>
   </div>
 
   <div id="v23DetailModal" class="v23-modal" onclick="if(event.target===this)v23CloseDetail()">
     <div class="bg-white rounded-2xl w-full max-w-5xl p-5 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between gap-3 items-start mb-3">
-        <div><h3 id="v23DetailTitle" class="text-xl font-bold">Maelezo ya Audit</h3><p id="v23DetailMeta" class="text-xs text-slate-500 mt-1"></p></div>
+        <div><h3 id="v23DetailTitle" class="text-xl font-bold">Maelezo ya Audit (Kusoma Pekee)</h3><p id="v23DetailMeta" class="text-xs text-slate-500 mt-1"></p></div>
         <button onclick="v23CloseDetail()" class="text-2xl">&times;</button>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -556,6 +719,19 @@ Umesahau neno siri?
  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-bold">
 + Ongeza Mtumiaji
 </button>
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">Watumiaji wote</p><p id="usersTotalCount" class="text-2xl font-bold mt-1">0</p></div>
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">Walio hai</p><p id="usersActiveCount" class="text-2xl font-bold mt-1">0</p></div>
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">Waliozimwa</p><p id="usersInactiveCount" class="text-2xl font-bold mt-1">0</p></div>
+<div class="bg-white rounded-xl shadow p-4"><p class="text-xs text-slate-500">Administrators</p><p id="usersAdminCount" class="text-2xl font-bold mt-1">0</p></div>
+</div>
+<div class="bg-white rounded-xl shadow p-4 mb-4">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="md:col-span-2"><label class="block text-xs font-semibold text-slate-500 mb-1">Tafuta mtumiaji</label><input id="usersSearch" oninput="renderUsers()" type="search" placeholder="Jina, simu au role..." class="w-full border rounded-lg px-3 py-2"></div>
+<div><label class="block text-xs font-semibold text-slate-500 mb-1">Chuja role</label><select id="usersRoleFilter" onchange="renderUsers()" class="w-full border rounded-lg px-3 py-2"><option value="">Roles zote</option><option>Administrator</option><option>Mwenyekiti</option><option>Katibu</option><option>Mhasibu</option><option>Mwanafamilia</option></select></div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-3"><p id="usersResultSummary" class="text-xs text-slate-500">Inaonyesha 0 kati ya 0 watumiaji.</p><button type="button" onclick="clearUsersFilters()" class="text-sm text-blue-700 font-semibold">Futa vichujio</button></div>
 </div>
 <div class="bg-white rounded-xl shadow overflow-hidden">
 <div class="overflow-x-auto">
@@ -1153,14 +1329,27 @@ let v23HistoryRows=[];
 let v23ActiveTab='audit';
 
 function v23CanView(){ return currentProfile?.role==='Administrator'; }
-function v23TableLabel(t){ return ({contributions:'Michango',disaster_assistance:'Msaada wa Maafa',fund_expenses:'Matumizi ya Mfuko',family_members:'Wanafamilia',profiles:'Profiles'})[t]||t||'-'; }
-function v23ActionLabel(a){ return ({INSERT:'Imeongezwa',UPDATE:'Imehaririwa',DELETE:'Imefutwa'})[a]||a||'-'; }
-function v23ActionClass(a){ return a==='INSERT'?'v23-add':a==='DELETE'?'v23-delete':'v23-edit'; }
+function v23TableLabel(t){ return ({contributions:'Michango',disaster_assistance:'Msaada wa Maafa',fund_expenses:'Matumizi ya Mfuko',family_members:'Wanafamilia',profiles:'Profiles','auth.users':'Akaunti za Auth'})[t]||t||'-'; }
+function v23ActionLabel(a){ return ({INSERT:'Imeongezwa',UPDATE:'Imehaririwa',DELETE:'Imefutwa',CHANGE_ROLE:'Role imebadilishwa',ENABLE_USER:'Akaunti imewashwa',DISABLE_USER:'Akaunti imezimwa',RESET_PASSWORD:'Neno siri limebadilishwa'})[a]||a||'-'; }
+function v23ActionClass(a){ return ['INSERT','ENABLE_USER'].includes(a)?'v23-add':a==='DELETE'||a==='DISABLE_USER'?'v23-delete':'v23-edit'; }
 function v23Pretty(obj){ try{return JSON.stringify(obj||{},null,2)}catch(e){return String(obj||'{}')} }
+function v23DateOnly(value){
+  if(!value)return '-';
+  const raw=String(value).slice(0,10);
+  const parts=raw.split('-');
+  if(parts.length===3 && parts.every(Boolean)) return parts[2]+'/'+parts[1]+'/'+parts[0];
+  return raw;
+}
+function v23DateTime(value){
+  if(!value)return '-';
+  try{return new Date(value).toLocaleString('sw-TZ',{dateStyle:'short',timeStyle:'short'})}catch(e){return String(value);}
+}
 function v23RecordSummary(row){
   const d=row.new_data||row.old_data||{};
-  const fields=['receipt_number','transaction_reference','description','category','amount','payment_method','contribution_date','assistance_date','expense_date','first_name','middle_name','last_name'];
-  const out=[]; fields.forEach(k=>{if(d[k]!==undefined&&d[k]!==null&&d[k]!=='') out.push(k+': '+String(d[k]))});
+  const fields=['receipt_number','transaction_reference','description','category','amount','payment_method','contribution_date','assistance_date','expense_date','first_name','middle_name','last_name','role','is_active','target_role','target_is_active'];
+  const labels={receipt_number:'Risiti',transaction_reference:'Rejea',description:'Maelezo',category:'Kategoria',amount:'Kiasi',payment_method:'Njia ya malipo',contribution_date:'Tarehe ya mchango',assistance_date:'Tarehe ya msaada',expense_date:'Tarehe ya matumizi',first_name:'Jina',middle_name:'Jina la kati',last_name:'Jina la mwisho',role:'Role',is_active:'Hali',target_role:'Role mpya',target_is_active:'Hali ya akaunti'};
+  const out=[]; fields.forEach(k=>{if(d[k]!==undefined&&d[k]!==null&&d[k]!=='') {let v=d[k]; if(k==='is_active'||k==='target_is_active') v=v===true?'Hai':'Imezimwa'; out.push((labels[k]||k)+': '+String(v));}});
+  if(row.action==='RESET_PASSWORD') out.unshift('Neno siri: limebadilishwa');
   return out.slice(0,3).join(' • ')||'Fungua maelezo';
 }
 function v23OpenAudit(id){
@@ -1189,17 +1378,59 @@ async function v23LoadAudit(force=false){
     const {data,error}=await supabaseClient.rpc('get_audit_trail_v23');
     if(error)throw error;
     v23AuditRows=data||[];
+    const actorEl=document.getElementById('v23AuditActor'); if(actorEl) actorEl.textContent=fullName(currentProfile||{})||'-';
     const ids=[...new Set(v23AuditRows.map(x=>x.user_id).filter(Boolean))];
     if(ids.length){const p=await supabaseClient.from('profiles').select('id,first_name,middle_name,last_name,role').in('id',ids); if(!p.error){const map=new Map((p.data||[]).map(x=>[x.id,x]));v23AuditRows=v23AuditRows.map(x=>({...x,actor_name:fullName(map.get(x.user_id)||{})||map.get(x.user_id)?.role||x.user_id}));}}
     v23RenderAudit();
   }catch(e){console.error(e);document.getElementById('v23AuditBody').innerHTML='<tr><td colspan="6" class="v23-empty v23-danger">Imeshindikana kupakia Audit Trail: '+escapeHtml(e.message)+'</td></tr>';}
 }
 function v23RenderAudit(){
-  const q=(document.getElementById('v23AuditSearch')?.value||'').toLowerCase().trim(); const a=document.getElementById('v23AuditAction')?.value||''; const t=document.getElementById('v23AuditTable')?.value||'';
-  const rows=v23AuditRows.filter(r=>{const hay=[r.actor_name,r.user_id,r.table_name,r.record_id,v23RecordSummary(r)].join(' ').toLowerCase();return(!q||hay.includes(q))&&(!a||r.action===a)&&(!t||r.table_name===t)});
-  document.getElementById('v23AuditCount').textContent=rows.length; const body=document.getElementById('v23AuditBody');
+  const q=(document.getElementById('v23AuditSearch')?.value||'').toLowerCase().trim();
+  const a=document.getElementById('v23AuditAction')?.value||'';
+  const t=document.getElementById('v23AuditTable')?.value||'';
+  const from=document.getElementById('v23AuditFrom')?.value||'';
+  const to=document.getElementById('v23AuditTo')?.value||'';
+  if(from && to && from>to){
+    document.getElementById('v23AuditCount').textContent='0';
+    const totalEl=document.getElementById('v23AuditTotalCount'); if(totalEl) totalEl.textContent=v23AuditRows.length;
+    const visibleEl=document.getElementById('v23AuditVisibleCount'); if(visibleEl) visibleEl.textContent='0';
+    document.getElementById('v23AuditBody').innerHTML='<tr><td colspan="6" class="v23-empty v23-danger">Tarehe ya kuanzia haiwezi kuwa baada ya tarehe ya mwisho.</td></tr>';
+    return;
+  }
+  const rows=v23AuditRows.filter(r=>{
+    const hay=[r.actor_name,r.user_id,r.table_name,r.record_id,v23RecordSummary(r)].join(' ').toLowerCase();
+    const d=String(r.created_at||'').slice(0,10);
+    return(!q||hay.includes(q))&&(!a||r.action===a)&&(!t||r.table_name===t)&&(!from||d>=from)&&(!to||d<=to);
+  });
+  document.getElementById('v23AuditCount').textContent=rows.length;
+  const totalEl=document.getElementById('v23AuditTotalCount'); if(totalEl) totalEl.textContent=v23AuditRows.length;
+  const visibleEl=document.getElementById('v23AuditVisibleCount'); if(visibleEl) visibleEl.textContent=rows.length;
+  const body=document.getElementById('v23AuditBody');
   if(!rows.length){body.innerHTML='<tr><td colspan="6" class="v23-empty">Hakuna matukio yanayolingana na vigezo.</td></tr>';return;}
-  body.innerHTML=rows.map(r=>'<tr><td>'+escapeHtml(new Date(r.created_at).toLocaleString('sw-TZ'))+'</td><td>'+escapeHtml(r.actor_name||r.user_id||'-')+'</td><td><span class="v23-badge '+v23ActionClass(r.action)+'">'+escapeHtml(v23ActionLabel(r.action))+'</span></td><td>'+escapeHtml(v23TableLabel(r.table_name))+'</td><td>'+escapeHtml(r.record_id||'-')+'</td><td><button onclick="v23OpenAudit('+Number(r.id)+')" class="text-blue-700 font-bold hover:underline">'+escapeHtml(v23RecordSummary(r))+'</button></td></tr>').join('');
+  body.innerHTML=rows.map(r=>'<tr><td>'+escapeHtml(v23DateTime(r.created_at))+'</td><td>'+escapeHtml(r.actor_name||r.user_id||'-')+'</td><td><span class="v23-badge '+v23ActionClass(r.action)+'">'+escapeHtml(v23ActionLabel(r.action))+'</span></td><td>'+escapeHtml(v23TableLabel(r.table_name))+'</td><td>'+escapeHtml(r.record_id||'-')+'</td><td><button onclick="v23OpenAudit('+Number(r.id)+')" class="text-blue-700 font-bold hover:underline">'+escapeHtml(v23RecordSummary(r))+'</button></td></tr>').join('');
+}
+function v23ClearAuditFilters(){
+  ['v23AuditSearch','v23AuditAction','v23AuditTable','v23AuditFrom','v23AuditTo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  v23RenderAudit();
+}
+function v23GetFilteredAuditRows(){
+  const q=(document.getElementById('v23AuditSearch')?.value||'').toLowerCase().trim();
+  const a=document.getElementById('v23AuditAction')?.value||'';
+  const t=document.getElementById('v23AuditTable')?.value||'';
+  const from=document.getElementById('v23AuditFrom')?.value||'';
+  const to=document.getElementById('v23AuditTo')?.value||'';
+  return v23AuditRows.filter(r=>{
+    const hay=[r.actor_name,r.user_id,r.table_name,r.record_id,v23RecordSummary(r)].join(' ').toLowerCase();
+    const d=String(r.created_at||'').slice(0,10);
+    return(!q||hay.includes(q))&&(!a||r.action===a)&&(!t||r.table_name===t)&&(!from||d>=from)&&(!to||d<=to);
+  });
+}
+function v23ExportAuditCSV(){
+  const rows=v23GetFilteredAuditRows();
+  if(!rows.length){alert('Hakuna matukio ya Audit Trail yanayoendana na vichujio.');return;}
+  const esc=v=>"\""+String(v??'').replace(/"/g,'""')+"\"";
+  const lines=[['Tarehe/Muda','Mtumiaji','Kitendo','Jedwali','Record ID','Maelezo'],...rows.map(r=>[v23DateTime(r.created_at),r.actor_name||r.user_id||'',v23ActionLabel(r.action),v23TableLabel(r.table_name),r.record_id||'',v23RecordSummary(r)])];
+  downloadTextFile('\ufeff'+lines.map(row=>row.map(esc).join(',')).join('\n'),'audit-trail-'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
 }
 async function v23LoadHistory(force=false){
   if(!v23CanView())return;
@@ -1211,15 +1442,36 @@ async function v23LoadHistory(force=false){
 }
 function v23RenderHistory(){
   const q=(document.getElementById('v23HistorySearch')?.value||'').toLowerCase().trim(), type=document.getElementById('v23HistoryType')?.value||'', from=document.getElementById('v23HistoryFrom')?.value||'', to=document.getElementById('v23HistoryTo')?.value||'';
-  const rows=v23HistoryRows.filter(r=>{const hay=[r.actor_name,r.transaction_type,r.receipt_number,r.transaction_reference,r.record_id,r.action_label].join(' ').toLowerCase(); const d=r.transaction_date||r.event_at?.slice(0,10)||''; return(!q||hay.includes(q))&&(!type||r.transaction_type===type)&&(!from||d>=from)&&(!to||d<=to)});
+  if(from && to && from>to){
+    const totalEl=document.getElementById('v23HistoryTotalCount'); if(totalEl) totalEl.textContent=v23HistoryRows.length;
+    const visibleEl=document.getElementById('v23HistoryVisibleCount'); if(visibleEl) visibleEl.textContent='0';
+    document.getElementById('v23HistoryBody').innerHTML='<tr><td colspan="7" class="v23-empty v23-danger">Tarehe ya kuanzia haiwezi kuwa baada ya tarehe ya mwisho.</td></tr>';
+    return;
+  }
+  const rows=v23HistoryRows.filter(r=>{const hay=[r.actor_name,r.transaction_type,r.receipt_number,r.transaction_reference,r.record_id,r.action_label,r.payment_method,JSON.stringify(r.old_data||{}),JSON.stringify(r.new_data||{})].join(' ').toLowerCase(); const d=r.transaction_date||r.event_at?.slice(0,10)||''; return(!q||hay.includes(q))&&(!type||r.transaction_type===type)&&(!from||d>=from)&&(!to||d<=to)});
+  const totalEl=document.getElementById('v23HistoryTotalCount'); if(totalEl) totalEl.textContent=v23HistoryRows.length;
+  const visibleEl=document.getElementById('v23HistoryVisibleCount'); if(visibleEl) visibleEl.textContent=rows.length;
   const body=document.getElementById('v23HistoryBody'); if(!rows.length){body.innerHTML='<tr><td colspan="7" class="v23-empty">Hakuna historia ya miamala inayolingana na vigezo.</td></tr>';return;}
-  body.innerHTML=rows.map(r=>'<tr><td>'+escapeHtml(r.transaction_date||new Date(r.event_at).toLocaleDateString('sw-TZ'))+'</td><td>'+escapeHtml(r.transaction_type||'-')+'</td><td><span class="v23-badge '+v23ActionClass(r.action)+'">'+escapeHtml(r.action_label||r.action||'-')+'</span></td><td>'+escapeHtml(r.actor_name||r.user_id||'-')+'</td><td>'+escapeHtml(r.receipt_number||r.transaction_reference||r.record_id||'-')+'</td><td class="text-right font-bold">'+(r.amount!==null&&r.amount!==undefined?'TZS '+money(r.amount):'-')+'</td><td>'+escapeHtml([r.payment_method,r.transaction_reference].filter(Boolean).join(' • ')||'-')+'</td></tr>').join('');
+  body.innerHTML=rows.map(r=>'<tr><td>'+escapeHtml(v23DateOnly(r.transaction_date||r.event_at))+'</td><td>'+escapeHtml(r.transaction_type||'-')+'</td><td><span class="v23-badge '+v23ActionClass(r.action)+'">'+escapeHtml(r.action_label||r.action||'-')+'</span></td><td>'+escapeHtml(r.actor_name||r.user_id||'-')+'</td><td>'+escapeHtml(r.receipt_number||r.transaction_reference||r.record_id||'-')+'</td><td class="text-right font-bold">'+(r.amount!==null&&r.amount!==undefined?'TZS '+money(r.amount):'-')+'</td><td>'+escapeHtml([r.payment_method,r.transaction_reference].filter(Boolean).join(' • ')||'-')+'</td></tr>').join('');
+}
+function v23ClearHistoryFilters(){
+  ['v23HistorySearch','v23HistoryType','v23HistoryFrom','v23HistoryTo'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  v23RenderHistory();
 }
 function v23ExportHistoryCSV(){
-  const q=(document.getElementById('v23HistorySearch')?.value||'').toLowerCase().trim(), type=document.getElementById('v23HistoryType')?.value||'';
-  const rows=v23HistoryRows.filter(r=>(!q||[r.actor_name,r.transaction_type,r.receipt_number,r.transaction_reference,r.record_id].join(' ').toLowerCase().includes(q))&&(!type||r.transaction_type===type));
-  if(!rows.length){alert('Hakuna historia ya kupakua.');return;}
-  const head=['Tarehe','Aina','Tendo','Mtumiaji','Risiti/Rejea','Kiasi','Njia ya malipo']; const lines=[head,...rows.map(r=>[r.transaction_date||'',r.transaction_type||'',r.action_label||r.action||'',r.actor_name||'',r.receipt_number||r.transaction_reference||r.record_id||'',r.amount??'',r.payment_method||''])].map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','));
+  const q=(document.getElementById('v23HistorySearch')?.value||'').toLowerCase().trim();
+  const type=document.getElementById('v23HistoryType')?.value||'';
+  const from=document.getElementById('v23HistoryFrom')?.value||'';
+  const to=document.getElementById('v23HistoryTo')?.value||'';
+  const rows=v23HistoryRows.filter(r=>{
+    const hay=[r.actor_name,r.transaction_type,r.receipt_number,r.transaction_reference,r.record_id,r.action_label,r.payment_method,JSON.stringify(r.old_data||{}),JSON.stringify(r.new_data||{})].join(' ').toLowerCase();
+    const d=r.transaction_date||String(r.event_at||'').slice(0,10)||'';
+    return(!q||hay.includes(q))&&(!type||r.transaction_type===type)&&(!from||d>=from)&&(!to||d<=to);
+  });
+  if(!rows.length){alert('Hakuna historia ya kupakua inayolingana na vichujio.');return;}
+  const head=['Tarehe','Aina','Tendo','Mtumiaji','Risiti/Rejea','Kiasi','Njia ya malipo','Rejea ya Muamala'];
+  const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+  const lines=[head,...rows.map(r=>[v23DateOnly(r.transaction_date||r.event_at),r.transaction_type||'',r.action_label||r.action||'',r.actor_name||'',r.receipt_number||r.transaction_reference||r.record_id||'',r.amount??'',r.payment_method||'',r.transaction_reference||''])].map(row=>row.map(esc).join(','));
   downloadTextFile('\ufeff'+lines.join('\n'),'historia-ya-miamala-'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
 }
 
@@ -1379,19 +1631,21 @@ async function downloadSystemBackup(){
   if(currentProfile?.role!=='Administrator'){alert('Administrator pekee ndiye anayeruhusiwa kupakua backup.');return;}
   const button=document.getElementById('backupButton'); if(!lockActionButton(button,'Inaandaa backup...'))return;
   try{
-    const [fr,cr,er,dr,pr,sr]=await Promise.all([
+    const [fr,cr,er,dr,dd,pr,sr,sn]=await Promise.all([
       supabaseClient.from('family_members').select('*'),
       supabaseClient.from('contributions').select('*'),
       supabaseClient.from('fund_expenses').select('*'),
       supabaseClient.from('disaster_assistance').select('*'),
+      supabaseClient.from('disaster_contribution_deductions').select('*'),
       supabaseClient.from('profiles').select('id,first_name,middle_name,last_name,phone,role,is_active,created_at,updated_at'),
-      supabaseClient.from('system_settings').select('*')
+      supabaseClient.from('system_settings').select('*'),
+      supabaseClient.from('system_notifications').select('*')
     ]);
-    const bad=[fr,cr,er,dr,pr,sr].find(x=>x.error); if(bad)throw bad.error;
-    const backup={schema_version:'MoNyakorema-backup-v1',exported_at:new Date().toISOString(),exported_by:currentUser?.id||null,data:{family_members:fr.data||[],contributions:cr.data||[],fund_expenses:er.data||[],disaster_assistance:dr.data||[],profiles:pr.data||[],system_settings:sr.data||[]}};
+    const bad=[fr,cr,er,dr,dd,pr,sr,sn].find(x=>x.error); if(bad)throw bad.error;
+    const backup={schema_version:'MoNyakorema-backup-v3',included_tables:['family_members','contributions','fund_expenses','disaster_assistance','disaster_contribution_deductions','profiles','system_settings','system_notifications'],exported_at:new Date().toISOString(),exported_by:currentUser?.id||null,data:{family_members:fr.data||[],contributions:cr.data||[],fund_expenses:er.data||[],disaster_assistance:dr.data||[],disaster_contribution_deductions:dd.data||[],profiles:pr.data||[],system_settings:sr.data||[],system_notifications:sn.data||[]}};
     const json=JSON.stringify(backup,null,2);
     downloadTextFile(json,'monyakorema-backup-'+new Date().toISOString().slice(0,10)+'.json','application/json;charset=utf-8');
-    document.getElementById('backupStatus').textContent='Backup imeandaliwa kwa kupakuliwa: '+new Date().toLocaleString('sw-TZ');
+    document.getElementById('backupStatus').textContent='Backup kamili imeandaliwa kwa kupakuliwa: '+new Date().toLocaleString('sw-TZ');
   }catch(e){console.error(e);alert('Imeshindikana kutengeneza backup: '+(e?.message||e));}finally{unlockActionButton(button,'Pakua Backup ya Mfumo');}
 }
 
@@ -1463,20 +1717,35 @@ function showPage(page){
 /* =========================================================
    DASHBOARD
 ========================================================= */
+async function refreshDashboard(){
+    const btn=document.querySelector('#page-dashboard button[onclick="refreshDashboard()"]');
+    if(btn){btn.disabled=true;btn.textContent='⏳ Inasasisha...';}
+    try{
+        await loadDashboard();
+    }finally{
+        if(btn){btn.disabled=false;btn.textContent='↻ Sasisha';}
+    }
+}
+
 async function loadDashboard(){
     ensureClient();
 
     const members=await supabaseClient
         .from("family_members")
-        .select("id",{count:"exact",head:true});
+        .select("id,first_name,middle_name,last_name,created_at");
 
     const membersEl=document.getElementById("dashboardMembers");
-    if(membersEl) membersEl.textContent=members.count||0;
+    const memberList=members.data||[];
+    if(membersEl) membersEl.textContent=memberList.length;
 
-    const {data,error}=await supabaseClient
-        .from("contributions")
-        .select("amount,contributor_type,contribution_date")
-        .eq("is_deleted",false);
+    const [contributionResult,expenseResult,disasterResult,deductionResult]=await Promise.all([
+        supabaseClient.from("contributions").select("id,family_member_id,amount,contributor_type,contribution_date,receipt_number,first_name,middle_name,last_name,payment_method,is_deleted").eq("is_deleted",false).order("contribution_date",{ascending:false}).limit(1000),
+        supabaseClient.from("fund_expenses").select("id,amount,expense_date,category,description,is_deleted").eq("is_deleted",false).order("expense_date",{ascending:false}).limit(100),
+        supabaseClient.from("disaster_assistance").select("id,amount,assistance_date,disaster_type,payment_status,status,is_deleted").eq("is_deleted",false).order("assistance_date",{ascending:false}).limit(100),
+        supabaseClient.from("disaster_contribution_deductions").select("id,amount,deduction_date,is_deleted").eq("is_deleted",false).order("deduction_date",{ascending:false}).limit(100)
+    ]);
+    const error=contributionResult.error||expenseResult.error||disasterResult.error||deductionResult.error;
+    const data=contributionResult.data||[];
 
     if(error){
         console.error("Dashboard contributions:",error);
@@ -1484,7 +1753,13 @@ async function loadDashboard(){
     }
 
     const rows=data||[];
+    const expenses=expenseResult.data||[];
+    const disasterRows=disasterResult.data||[];
+    const deductionRows=deductionResult.data||[];
     const total=rows.reduce((sum,row)=>sum+Number(row.amount||0),0);
+    const totalExpenses=expenses.reduce((sum,row)=>sum+Number(row.amount||0),0);
+    const totalDisasterPaid=disasterRows.filter(row=>row.payment_status==='Imelipwa').reduce((sum,row)=>sum+Number(row.amount||0),0);
+    const totalDeductions=deductionRows.reduce((sum,row)=>sum+Number(row.amount||0),0);
     const familyRows=rows.filter(row=>row.contributor_type==="Mwanafamilia");
     const stakeholderRows=rows.filter(row=>row.contributor_type!=="Mwanafamilia");
     const familyAmount=familyRows.reduce((sum,row)=>sum+Number(row.amount||0),0);
@@ -1528,6 +1803,94 @@ async function loadDashboard(){
           ? "Lengo limefikiwa! Jumla iliyokusanywa ni TZS "+money(total)+"."
           : "Zimekusanywa TZS "+money(total)+" kati ya TZS "+money(target)+". Bado TZS "+money(remaining)+" kufikia lengo.";
     }
+
+    const setDash=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent="TZS "+money(value);};
+    setDash("dashboardExpenses",totalExpenses);
+    setDash("dashboardDisasterPaid",totalDisasterPaid);
+    setDash("dashboardDeductions",totalDeductions);
+    setDash("dashboardNet",total-totalExpenses-totalDisasterPaid);
+
+    // Muhtasari wa wajibu wa michango wa kila mwanafamilia hadi mwezi wa sasa.
+    const paidByMember=new Map();
+    rows.filter(r=>r.contributor_type==="Mwanafamilia").forEach(r=>{
+        const id=String(r.family_member_id||"");
+        if(!id)return;
+        const month=String(r.contribution_date||"").slice(0,7);
+        if(!paidByMember.has(id)) paidByMember.set(id,new Map());
+        const map=paidByMember.get(id);
+        map.set(month,(map.get(month)||0)+Math.max(0,Number(r.amount||0)));
+    });
+    let dashboardComplete=0, dashboardDebtors=0, dashboardDebtAmount=0, dashboardExcessMembers=0, dashboardExcessAmount=0;
+    memberList.forEach(member=>{
+        const months=getContributionMonths(member);
+        const monthly=paidByMember.get(String(member.id))||new Map();
+        let carry=0,totalPaid=0;
+        months.forEach(m=>{
+            const paid=Math.max(0,Number(monthly.get(m.key)||0));
+            totalPaid+=paid;
+            carry+=paid;
+            carry-=Math.min(carry,m.due);
+        });
+        const due=months.reduce((sum,m)=>sum+m.due,0);
+        const debt=Math.max(due-totalPaid,0);
+        const excess=Math.max(totalPaid-due,0);
+        if(debt>0){dashboardDebtors++;dashboardDebtAmount+=debt;}else{dashboardComplete++;}
+        if(excess>0){dashboardExcessMembers++;dashboardExcessAmount+=excess;}
+    });
+    const setDashText=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=String(value);};
+    setDashText("dashboardContribComplete",dashboardComplete);
+    setDashText("dashboardContribDebtors",dashboardDebtors);
+    setDashText("dashboardContribDebtAmount","TZS "+money(dashboardDebtAmount));
+    setDashText("dashboardContribExcess",dashboardExcessMembers);
+    setDashText("dashboardContribExcessAmount","TZS "+money(dashboardExcessAmount));
+
+    // Hali ya mwezi huu: hupima wajibu na malipo ya mwezi wa sasa pekee.
+    const currentMonthKey=getCurrentContributionMonthKey();
+    const currentMonthLabel=new Intl.DateTimeFormat('sw-TZ',{month:'long',year:'numeric'})
+        .format(new Date(Number(currentMonthKey.slice(0,4)),Number(currentMonthKey.slice(5,7))-1,1));
+    const currentMonthMembers=memberList.filter(member=>getContributionMonths(member).some(m=>m.key===currentMonthKey));
+    const currentMonthPaidByMember=new Map();
+    rows.filter(r=>r.contributor_type==="Mwanafamilia" && String(r.contribution_date||"").slice(0,7)===currentMonthKey)
+        .forEach(r=>{
+            const id=String(r.family_member_id||"");
+            if(!id)return;
+            currentMonthPaidByMember.set(id,(currentMonthPaidByMember.get(id)||0)+Math.max(0,Number(r.amount||0)));
+        });
+    const currentMonthDue=currentMonthMembers.length*FAMILY_MONTHLY_CONTRIBUTION;
+    // Onyesha kiasi halisi kilicholipwa mwezi huu; malipo yanayozidi wajibu
+    // hayapotei kwenye dashboard, bali yanaendelea kuonekana kama ziada kwenye ufuatiliaji wa michango.
+    const currentMonthPaid=currentMonthMembers.reduce((sum,m)=>sum+Math.max(0,Number(currentMonthPaidByMember.get(String(m.id))||0)),0);
+    const currentMonthPaidMembers=currentMonthMembers.filter(m=>Number(currentMonthPaidByMember.get(String(m.id))||0)>=FAMILY_MONTHLY_CONTRIBUTION).length;
+    const currentMonthRemaining=Math.max(currentMonthDue-currentMonthPaid,0);
+    const currentMonthRate=currentMonthDue>0?Math.min(100,(currentMonthPaid/currentMonthDue)*100):0;
+    const setDashMoney=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent="TZS "+money(value);};
+    setDashMoney("dashboardCurrentMonthDue",currentMonthDue);
+    setDashMoney("dashboardCurrentMonthPaid",currentMonthPaid);
+    setDashText("dashboardCurrentMonthPaidMembers",currentMonthPaidMembers);
+    setDashText("dashboardCurrentMonthMembersSummary",currentMonthPaidMembers+" kati ya "+currentMonthMembers.length+" wenye wajibu");
+    setDashMoney("dashboardCurrentMonthRemaining",currentMonthRemaining);
+    const currentMonthLabelEl=document.getElementById("dashboardCurrentMonthLabel");
+    if(currentMonthLabelEl) currentMonthLabelEl.textContent=currentMonthLabel+" • Wajibu wa TZS "+money(FAMILY_MONTHLY_CONTRIBUTION)+" kwa kila mwanafamilia mwenye wajibu.";
+    const currentMonthRateEl=document.getElementById("dashboardCurrentMonthRate");
+    if(currentMonthRateEl) currentMonthRateEl.textContent=Math.round(currentMonthRate)+"%";
+    const currentMonthBar=document.getElementById("dashboardCurrentMonthBar");
+    if(currentMonthBar) currentMonthBar.style.width=currentMonthRate+"%";
+
+    const recent=[
+      ...rows.map(r=>({date:r.contribution_date,type:"Mchango",desc:([r.first_name,r.middle_name,r.last_name].filter(Boolean).join(" ")||"Mchango")+((r.receipt_number?" • Risiti "+r.receipt_number:"")),amount:Number(r.amount||0),kind:"in"})),
+      ...expenses.map(r=>({date:r.expense_date,type:"Matumizi",desc:r.category||r.description||"Matumizi",amount:Number(r.amount||0),kind:"out"})),
+      ...disasterRows.filter(r=>r.payment_status==='Imelipwa').map(r=>({date:r.assistance_date,type:"Msaada wa Maafa",desc:r.disaster_type||"Msaada",amount:Number(r.amount||0),kind:"out"}))
+    ].sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))).slice(0,10);
+    const recentBody=document.getElementById("dashboardRecentActivity");
+    const formatDashboardActivityDate=(value)=>{
+      if(!value)return "-";
+      const parts=String(value).slice(0,10).split("-");
+      if(parts.length===3 && parts.every(Boolean)) return parts[2]+"/"+parts[1]+"/"+parts[0];
+      return String(value);
+    };
+    if(recentBody) recentBody.innerHTML=recent.length?recent.map(r=>`<tr class="border-t"><td class="p-3 whitespace-nowrap">${escapeHtml(formatDashboardActivityDate(r.date))}</td><td class="p-3 font-semibold">${escapeHtml(r.type)}</td><td class="p-3">${escapeHtml(r.desc)}</td><td class="p-3 text-right font-bold whitespace-nowrap ${r.kind==='out'?'text-red-600':'text-green-700'}">${r.kind==='out'?'-':'+'}TZS ${money(r.amount)}</td></tr>`).join(""):'<tr><td colspan="4" class="p-6 text-center text-slate-500">Hakuna shughuli zilizorekodiwa.</td></tr>';
+    const updated=document.getElementById('dashboardLastUpdated');
+    if(updated) updated.textContent='Imesasishwa: '+new Date().toLocaleString('sw-TZ',{dateStyle:'medium',timeStyle:'short'});
 }
 
 /* =========================================================
@@ -1836,9 +2199,33 @@ function lifeStatusLabel(status){
     return "Hajaainishwa";
 }
 
+function updateFamilyStatistics(){
+    const members=Array.isArray(familyMembers)?familyMembers:[];
+    // Database huhifadhi jinsia kama Me/Ke; tunakubali pia majina marefu
+    // ili takwimu zisitegemee tofauti ndogo ya uandishi.
+    const normalizeGender=(value)=>{
+        const g=String(value??'').trim().toLowerCase();
+        if(['me','m','male','mwanaume','kiume'].includes(g)) return 'me';
+        if(['ke','f','female','mwanamke','kike'].includes(g)) return 'ke';
+        return '';
+    };
+    const male=members.filter(m=>normalizeGender(m.gender)==='me').length;
+    const female=members.filter(m=>normalizeGender(m.gender)==='ke').length;
+    const alive=members.filter(m=>String(m.life_status||'').toLowerCase()==='hai').length;
+    const unknown=members.filter(m=>!['hai','amefariki'].includes(String(m.life_status||'').toLowerCase())).length;
+    const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=Number(value||0).toLocaleString('sw-TZ');};
+    set('familyStatTotal',members.length);
+    set('familyStatMale',male);
+    set('familyStatFemale',female);
+    set('familyStatAlive',alive);
+    set('familyStatPhone',members.filter(m=>String(m.phone||'').trim()!=='').length);
+    set('familyStatUnknownLife',unknown);
+}
+
 function renderFamilyMembers(list=familyMembers){
     const table=document.getElementById("familyTable");
     const badge=document.getElementById("familyCountBadge");
+    updateFamilyStatistics();
     if(!table) return;
 
     const rows=(Array.isArray(list)?list:[]).slice().sort((a,b)=>{
@@ -1860,7 +2247,7 @@ function renderFamilyMembers(list=familyMembers){
       <td class="p-3 text-center">${member.phone ? `<div class="flex flex-wrap items-center justify-center gap-2"><a href="tel:${escapeHtml(String(member.phone).replace(/[^0-9+]/g,''))}" class="text-blue-600 hover:text-blue-800 hover:underline font-semibold" title="Piga simu">${escapeHtml(member.phone)}</a><a href="https://wa.me/${String(member.phone).replace(/[^0-9]/g,'').replace(/^0/,'255')}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-2 py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white text-xs font-bold" title="Tuma WhatsApp">WhatsApp</a></div>` : "-"}</td>
       <td class="p-3 font-semibold">${escapeHtml(calculateAge(member.date_of_birth))}</td>
       <td class="p-3">${escapeHtml(maritalStatusLabel(member.marital_status))}</td>
-      <td class="p-3">${member.date_of_birth?new Date(member.date_of_birth+"T00:00:00").toLocaleDateString("sw-TZ"):"-"}</td>
+      <td class="p-3">${member.date_of_birth?formatDisplayDate(member.date_of_birth):"-"}</td>
       <td class="p-3">${escapeHtml(lifeStatusLabel(member.life_status))}</td>
       <td class="p-3">
         <div class="flex flex-wrap items-center justify-end gap-3 whitespace-nowrap">
@@ -1875,11 +2262,67 @@ function renderFamilyMembers(list=familyMembers){
     </tr>`).join("");
 }
 
+function exportFamilyCSV(){
+    const rows=Array.isArray(familyMembers)?familyMembers:[];
+    const esc=v=>'"'+String(v??'').replaceAll('"','""')+'"';
+    const data=[['Jina','Jinsia','Simu','Barua pepe','Umri','Hali ya ndoa','Tarehe ya kuzaliwa','Hali ya uhai','Uhusiano','Anwani'],
+      ...rows.map(m=>[fullName(m),m.gender||'',m.phone||'',m.email||'',calculateAge(m.date_of_birth),maritalStatusLabel(m.marital_status),m.date_of_birth||'',lifeStatusLabel(m.life_status),m.relationship||'',m.address||''])];
+    const csv='\ufeff'+data.map(r=>r.map(esc).join(',')).join('\n');
+    downloadTextFile(csv,'orodha-ya-wanafamilia-'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');
+}
+
+function normalizeFamilyGender(value){
+    const g=String(value??'').trim().toLowerCase();
+    if(['me','m','male','mwanaume','kiume'].includes(g)) return 'me';
+    if(['ke','f','female','mwanamke','kike'].includes(g)) return 'ke';
+    return '';
+}
+
+async function refreshFamilyPage(){
+    const btn=document.getElementById('refreshFamilyButton');
+    if(btn){btn.disabled=true;btn.textContent='⏳ Inasasisha...';}
+    try{
+        await loadFamilyMembers();
+        const stamp=document.getElementById('familyLastUpdated');
+        if(stamp) stamp.textContent='Imesasishwa: '+new Date().toLocaleString('sw-TZ');
+    }finally{
+        if(btn){btn.disabled=false;btn.textContent='↻ Sasisha';}
+    }
+}
+
 function filterFamily(){
-    const q=document.getElementById("familySearch").value.toLowerCase();
-    renderFamilyMembers(familyMembers.filter(row=>
-        (fullName(row)+" "+(row.phone||"")+" "+(row.marital_status||"")+" "+(row.life_status||"")+" "+calculateAge(row.date_of_birth)).toLowerCase().includes(q)
-    ));
+    const q=(document.getElementById('familySearch')?.value||'').trim().toLowerCase();
+    const gender=(document.getElementById('familyGenderFilter')?.value||'').toLowerCase();
+    const life=document.getElementById('familyLifeFilter')?.value||'';
+    const normalizeLife=value=>{ const v=String(value??'').trim().toLowerCase(); return v==='hai'?'Hai':v==='amefariki'?'Amefariki':'unknown'; };
+    const rows=familyMembers.filter(row=>{
+        const haystack=(fullName(row)+' '+(row.phone||'')+' '+(row.marital_status||'')+' '+(row.life_status||'')+' '+calculateAge(row.date_of_birth)).toLowerCase();
+        return (!q || haystack.includes(q)) && (!gender || normalizeFamilyGender(row.gender)===gender) && (!life || normalizeLife(row.life_status)===life);
+    });
+    renderFamilyMembers(rows);
+    const summary=document.getElementById('familyFilterSummary');
+    if(summary){
+        const active=Boolean(q||gender||life);
+        if(active){
+            summary.textContent=rows.length
+                ? `Inaonyesha ${rows.length.toLocaleString('sw-TZ')} kati ya ${familyMembers.length.toLocaleString('sw-TZ')} wanafamilia.`
+                : 'Hakuna mwanafamilia anayelingana na utafutaji au vichujio hivi.';
+        }else{
+            summary.textContent=familyMembers.length
+                ? `Inaonyesha wanafamilia wote (${familyMembers.length.toLocaleString('sw-TZ')}).`
+                : 'Hakuna wanafamilia waliorekodiwa.';
+        }
+    }
+}
+
+function clearFamilyFilters(){
+    const search=document.getElementById('familySearch');
+    const gender=document.getElementById('familyGenderFilter');
+    const life=document.getElementById('familyLifeFilter');
+    if(search) search.value='';
+    if(gender) gender.value='';
+    if(life) life.value='';
+    filterFamily();
 }
 
 function openFamilyModal(member=null){
@@ -2004,7 +2447,7 @@ function renderPendingApprovals(){
         <div class="bg-white border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="min-w-0">
                 <div class="font-semibold truncate">${escapeHtml(x.member_name||'-')}</div>
-                <div class="text-sm text-slate-600">${escapeHtml(x.disaster_type||'-')} · ${escapeHtml(x.assistance_date||'-')}</div>
+                <div class="text-sm text-slate-600">${escapeHtml(x.disaster_type||'-')} · ${escapeHtml(formatDisplayDate(x.assistance_date))}</div>
                 <div class="text-sm font-bold mt-1">TZS ${money(x.amount)}</div>
             </div>
             <div class="flex flex-wrap gap-2 shrink-0">
@@ -2015,7 +2458,7 @@ function renderPendingApprovals(){
     `).join('');
 }
 
-function renderDisasterTable(source=disasterAssistance){const q=(document.getElementById('disasterSearch')?.value||'').toLowerCase().trim();const from=document.getElementById('disasterFrom')?.value||'',to=document.getElementById('disasterTo')?.value||'';const rows=source.filter(x=>(!from||x.assistance_date>=from)&&(!to||x.assistance_date<=to)&&(!q||[x.member_name,x.disaster_type,x.receipt_number,x.description].join(' ').toLowerCase().includes(q)));const t=document.getElementById('disasterTable');if(!t)return;t.innerHTML=rows.length?rows.map(x=>{const canPay=['Administrator','Mhasibu'].includes(currentProfile?.role)&&x.approval_status==='Imeidhinishwa'&&x.payment_status!=='Imelipwa'&&x.status!=='Imeghairiwa';const canEdit=['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)&&x.approval_status==='Inasubiri'&&x.payment_status!=='Imelipwa';const canDelete=currentProfile?.role==='Administrator';const paymentLabel=x.payment_status==='Imelipwa'?'Imelipwa':'Haijalipwa';return `<tr class="border-t"><td class="p-3">${escapeHtml(x.assistance_date||'-')}</td><td class="p-3">${escapeHtml(x.member_name||'-')}</td><td class="p-3">${escapeHtml(x.disaster_type||'-')}</td><td class="p-3">${escapeHtml(x.description||'-')}</td><td class="p-3 text-right font-bold">TZS ${money(x.amount)}</td><td class="p-3"><span class="font-semibold">${escapeHtml(x.status||'-')}</span><br><span class="text-xs text-slate-500">Idhini: ${escapeHtml(x.approval_status||'Inasubiri')}</span><br><span class="text-xs ${x.payment_status==='Imelipwa'?'text-green-700':'text-amber-700'} font-semibold">Malipo: ${paymentLabel}</span></td><td class="p-3 text-center align-middle whitespace-nowrap"><div class="flex items-center justify-center gap-4">${canEdit?`<button onclick="editDisaster(${x.id})" class="text-blue-600 font-bold">Hariri</button>`:''}${canPay?`<button onclick="payDisaster(${x.id})" class="text-emerald-600 font-bold">Lipa</button>`:''}${canDelete?`<button onclick="deleteDisaster(${x.id})" class="text-red-600 font-bold">Futa</button>`:''}</div></td></tr>`}).join(''):'<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna kumbukumbu za msaada.</td></tr>';}
+function renderDisasterTable(source=disasterAssistance){const q=(document.getElementById('disasterSearch')?.value||'').toLowerCase().trim();const from=document.getElementById('disasterFrom')?.value||'',to=document.getElementById('disasterTo')?.value||'';const rows=source.filter(x=>(!from||x.assistance_date>=from)&&(!to||x.assistance_date<=to)&&(!q||[x.member_name,x.disaster_type,x.receipt_number,x.description].join(' ').toLowerCase().includes(q)));const t=document.getElementById('disasterTable');if(!t)return;t.innerHTML=rows.length?rows.map(x=>{const canPay=['Administrator','Mhasibu'].includes(currentProfile?.role)&&x.approval_status==='Imeidhinishwa'&&x.payment_status!=='Imelipwa'&&x.status!=='Imeghairiwa';const canEdit=['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)&&x.approval_status==='Inasubiri'&&x.payment_status!=='Imelipwa';const canDelete=currentProfile?.role==='Administrator';const paymentLabel=x.payment_status==='Imelipwa'?'Imelipwa':'Haijalipwa';return `<tr class="border-t"><td class="p-3">${escapeHtml(formatDisplayDate(x.assistance_date))}</td><td class="p-3">${escapeHtml(x.member_name||'-')}</td><td class="p-3">${escapeHtml(x.disaster_type||'-')}</td><td class="p-3">${escapeHtml(x.description||'-')}</td><td class="p-3 text-right font-bold">TZS ${money(x.amount)}</td><td class="p-3"><span class="font-semibold">${escapeHtml(x.status||'-')}</span><br><span class="text-xs text-slate-500">Idhini: ${escapeHtml(x.approval_status||'Inasubiri')}</span><br><span class="text-xs ${x.payment_status==='Imelipwa'?'text-green-700':'text-amber-700'} font-semibold">Malipo: ${paymentLabel}</span></td><td class="p-3 text-center align-middle whitespace-nowrap"><div class="flex items-center justify-center gap-4">${canEdit?`<button onclick="editDisaster(${x.id})" class="text-blue-600 font-bold">Hariri</button>`:''}${canPay?`<button onclick="payDisaster(${x.id})" class="text-emerald-600 font-bold">Lipa</button>`:''}${canDelete?`<button onclick="deleteDisaster(${x.id})" class="text-red-600 font-bold">Futa</button>`:''}</div></td></tr>`}).join(''):'<tr><td colspan="7" class="p-6 text-center text-slate-500">Hakuna kumbukumbu za msaada.</td></tr>';}
 function populateDisasterMembers(){const s=document.getElementById('disasterMember');if(!s)return;const old=s.value;s.innerHTML='<option value="">Chagua mwanafamilia</option>'+familyMembers.map(m=>`<option value="${m.id}">${escapeHtml(fullName(m))}</option>`).join('');if(old)s.value=old;}
 function openDisasterModal(id=null){if(!['Administrator','Mhasibu','Katibu'].includes(currentProfile?.role)){alert('Huna ruhusa ya kurekodi au kuhariri msaada.');return;}populateDisasterMembers();const r=id?disasterAssistance.find(x=>Number(x.id)===Number(id)):null;if(r&&(r.approval_status!=='Inasubiri'||r.payment_status==='Imelipwa')){alert('Ombi hili haliwezi kuhaririwa baada ya idhini au malipo.');return;}document.getElementById('disasterId').value=r?.id||'';document.getElementById('disasterMember').value=r?.family_member_id||'';document.getElementById('disasterIncidentDate').value=r?.incident_date||new Date().toISOString().slice(0,10);document.getElementById('disasterAssistanceDate').value=r?.assistance_date||new Date().toISOString().slice(0,10);document.getElementById('disasterType').value=r?.disaster_type||'';document.getElementById('disasterAmount').value=r?.amount||'';document.getElementById('disasterReceipt').value=r?.receipt_number||'';document.getElementById('disasterStatus').value='Inasubiri';document.getElementById('disasterApprovalStatus').value='Inasubiri';document.getElementById('disasterApprovalNotes').value='';document.getElementById('disasterPaymentStatusDisplay').value=r?.payment_status||'Haijalipwa';document.getElementById('disasterDescription').value=r?.description||'';document.getElementById('disasterNotes').value=r?.notes||'';const m=document.getElementById('disasterModal');m.classList.remove('hidden');m.classList.add('flex');}
 function closeDisasterModal(){const m=document.getElementById('disasterModal');m.classList.add('hidden');m.classList.remove('flex');}
@@ -2140,7 +2583,7 @@ async function deleteDisaster(id){
 }
 
 function exportDisasterCSV(){const rows=disasterAssistance||[];const data=[['Tarehe','Mwanafamilia','Aina ya maafa','Maelezo','Kiasi','Hali','Malipo','Risiti'],...rows.map(x=>[x.assistance_date,x.member_name,x.disaster_type,x.description,x.amount,x.status,x.payment_status||'Haijalipwa',x.receipt_number])];const csv='\ufeff'+data.map(r=>r.map(financeCsvCell).join(',')).join('\n');downloadTextFile(csv,'ripoti-maafa-'+new Date().toISOString().slice(0,10)+'.csv','text/csv;charset=utf-8');}
-function printDisasterReport(){const rows=disasterAssistance||[];const w=window.open('','_blank');if(!w){alert('Ruhusu pop-up ili kuchapisha.');return;}w.document.write(`<html><head><title>Ripoti ya Maafa na Misaada</title><style>body{font-family:Arial;padding:25px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px}th{background:#eee}.n{text-align:right}</style></head><body><h2>Familia ya Mo'Nyakorema O'Rila</h2><h3>Ripoti ya Maafa na Misaada</h3><table><tr><th>Tarehe</th><th>Mwanafamilia</th><th>Maafa</th><th>Kiasi</th><th>Hali</th></tr>${rows.map(x=>`<tr><td>${escapeHtml(x.assistance_date||'')}</td><td>${escapeHtml(x.member_name||'')}</td><td>${escapeHtml(x.disaster_type||'')}</td><td class="n">TZS ${money(x.amount)}</td><td>${escapeHtml(x.status||'')}</td></tr>`).join('')}</table>
+function printDisasterReport(){const rows=disasterAssistance||[];const w=window.open('','_blank');if(!w){alert('Ruhusu pop-up ili kuchapisha.');return;}w.document.write(`<html><head><title>Ripoti ya Maafa na Misaada</title><style>body{font-family:Arial;padding:25px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:7px}th{background:#eee}.n{text-align:right}</style></head><body><h2>Familia ya Mo'Nyakorema O'Rila</h2><h3>Ripoti ya Maafa na Misaada</h3><table><tr><th>Tarehe</th><th>Mwanafamilia</th><th>Maafa</th><th>Kiasi</th><th>Hali</th></tr>${rows.map(x=>`<tr><td>${escapeHtml(formatDisplayDate(x.assistance_date))}</td><td>${escapeHtml(x.member_name||'')}</td><td>${escapeHtml(x.disaster_type||'')}</td><td class="n">TZS ${money(x.amount)}</td><td>${escapeHtml(x.status||'')}</td></tr>`).join('')}</table>
 </body></html>`);w.document.close();setTimeout(()=>w.print(),300);}
 
 function financeMoney(v){ return "TZS "+money(v); }
@@ -2193,11 +2636,19 @@ async function loadFinanceDashboard(){
   const table=document.getElementById('expenseTable');
   const canManageExpenses=['Administrator','Mhasibu'].includes(currentProfile?.role);
   const canDeleteExpenses=currentProfile?.role==='Administrator';
-  if(table) table.innerHTML=expenses.length?expenses.map(r=>`<tr class="border-t"><td class="p-3">${escapeHtml(r.expense_date||'-')}</td><td class="p-3">${escapeHtml(r.category||'-')}</td><td class="p-3">${escapeHtml(r.description||'-')}</td><td class="p-3 text-right font-bold">${financeMoney(r.amount)}</td><td class="p-3 text-right">${canManageExpenses?`<button onclick="editExpense(${r.id})" class="text-blue-600 font-bold mr-3">Hariri</button>`:''}${canDeleteExpenses?`<button onclick="deleteExpense(${r.id})" class="text-red-600 font-bold">Futa</button>`:''}</td></tr>`).join(''):'<tr><td colspan="5" class="p-6 text-center text-slate-500">Hakuna matumizi yaliyorekodiwa.</td></tr>';
+  if(table) table.innerHTML=expenses.length?expenses.map(r=>`<tr class="border-t"><td class="p-3">${escapeHtml(formatDisplayDate(r.expense_date))}</td><td class="p-3">${escapeHtml(r.category||'-')}</td><td class="p-3">${escapeHtml(r.description||'-')}</td><td class="p-3 text-right font-bold">${financeMoney(r.amount)}</td><td class="p-3 text-right">${canManageExpenses?`<button onclick="editExpense(${r.id})" class="text-blue-600 font-bold mr-3">Hariri</button>`:''}${canDeleteExpenses?`<button onclick="deleteExpense(${r.id})" class="text-red-600 font-bold">Futa</button>`:''}</td></tr>`).join(''):'<tr><td colspan="5" class="p-6 text-center text-slate-500">Hakuna matumizi yaliyorekodiwa.</td></tr>';
   window.financeExpenses=expenses;
   window.financeDisasterAssistance=disasterRows;
-  window.financePeriodSummary={income,spent,disasterSpent,deductionsRecorded,fundBalance,periodNet:income-spent-disasterSpent};
+  const periodNet=income-spent-disasterSpent;
+  const reconciliation=totalContributions-totalExpenses-totalAssistancePaid;
+  const reconciliationDifference=fundBalance-reconciliation;
+  window.financePeriodSummary={income,spent,disasterSpent,deductionsRecorded,fundBalance,periodNet,reconciliation,reconciliationDifference,totalContributions,totalExpenses,totalAssistancePaid};
   window.financeContributionRows=cr.data||[];
+  const reconBox=document.getElementById('financeReconciliation');
+  if(reconBox){
+    const ok=Math.abs(reconciliationDifference)<0.01;
+    reconBox.innerHTML=`<div class=\"flex items-start justify-between gap-3\"><div><p class=\"font-bold\">Ulinganifu wa Salio</p><p class=\"text-xs text-slate-500 mt-1\">Mfumo unalinganisha salio kuu la database na: Michango yote − Matumizi yote − Misaada yote iliyolipwa.</p></div><span class=\"text-xs font-bold px-2 py-1 rounded-full ${ok?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}\">${ok?'✓ Linaendana':'⚠ Tofauti ipo'}</span></div><div class=\"grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4\"><div><p class=\"text-xs text-slate-500\">Salio la database</p><p class=\"font-bold\">${financeMoney(fundBalance)}</p></div><div><p class=\"text-xs text-slate-500\">Salio lililokokotolewa</p><p class=\"font-bold\">${financeMoney(reconciliation)}</p></div><div><p class=\"text-xs text-slate-500\">Tofauti</p><p class=\"font-bold ${ok?'text-green-700':'text-red-700'}\">${financeMoney(reconciliationDifference)}</p></div></div>`;
+  }
   prepareFinanceChart();
 }
 
@@ -2252,24 +2703,132 @@ function printFinanceReport(){
 }
 
 
+function formatDisplayDate(value){
+    if(!value) return '-';
+    const text=String(value);
+    const match=text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if(match) return `${match[3]}/${match[2]}/${match[1]}`;
+    return text;
+}
+
 function reportMoney(v){
     const n=Number(v||0);
     return 'TZS '+n.toLocaleString('sw-TZ',{minimumFractionDigits:0,maximumFractionDigits:2});
 }
 
+function monthKeysBetween(startKey,endKey){
+    const out=[];
+    if(!/^\d{4}-\d{2}$/.test(startKey)||!/^\d{4}-\d{2}$/.test(endKey)||startKey>endKey)return out;
+    let [y,m]=startKey.split('-').map(Number);
+    const [ey,em]=endKey.split('-').map(Number);
+    while(y<ey || (y===ey && m<=em)){
+        out.push(`${y}-${String(m).padStart(2,'0')}`);
+        m++; if(m===13){m=1;y++;}
+    }
+    return out;
+}
+
+function setContributionFollowupFilterV79(filter){
+    window.currentContributionFollowupFilterV79=filter||'debt';
+    document.querySelectorAll('#reportFollowupFiltersV79 [data-followup-filter]').forEach(btn=>{
+        const active=btn.getAttribute('data-followup-filter')===window.currentContributionFollowupFilterV79;
+        btn.classList.toggle('bg-blue-100',active); btn.classList.toggle('text-blue-700',active);
+        btn.classList.toggle('bg-slate-100',!active); btn.classList.toggle('text-slate-700',!active);
+        if(active){btn.classList.remove('bg-red-100','text-red-700');}
+    });
+    filterContributionFollowup();
+}
+function filterContributionFollowup(){
+    const table=document.getElementById('reportFollowupTable');
+    if(!table)return;
+    const q=String(document.getElementById('reportFollowupSearch')?.value||'').trim().toLowerCase();
+    const filter=window.currentContributionFollowupFilterV79||'debt';
+    const allRows=window.currentContributionFollowupAllRowsV79||window.currentContributionFollowupRows||[];
+    const counts={all:allRows.length,debt:allRows.filter(r=>Number(r.debt)>0).length,complete:allRows.filter(r=>Number(r.debt)<=0).length,excess:allRows.filter(r=>Number(r.excess)>0).length};
+    Object.keys(counts).forEach(k=>{const el=document.querySelector(`[data-followup-count="${k}"]`);if(el)el.textContent=`(${counts[k]})`;});
+    const countEl=document.getElementById('reportFollowupCount');
+    if(countEl) countEl.textContent=`${counts.debt} wenye deni`;
+    const debtTotal=allRows.reduce((sum,r)=>sum+Math.max(0,Number(r.debt)||0),0);
+    const debtMembers=counts.debt;
+    const avgDebt=debtMembers?debtTotal/debtMembers:0;
+    const debtTotalEl=document.getElementById('reportFollowupDebtTotalV83');
+    const debtMembersEl=document.getElementById('reportFollowupDebtMembersV83');
+    const avgDebtEl=document.getElementById('reportFollowupAverageDebtV83');
+    if(debtTotalEl) debtTotalEl.textContent=reportMoney(debtTotal);
+    if(debtMembersEl) debtMembersEl.textContent=String(debtMembers);
+    if(avgDebtEl) avgDebtEl.textContent=reportMoney(avgDebt);
+    const rows=allRows.filter(r=>{
+        const status=filter==='debt'?(r.debt>0):filter==='complete'?(r.debt<=0):filter==='excess'?(r.excess>0):true;
+        return status && (!q||String(r.memberName||'').toLowerCase().includes(q));
+    }).sort((a,b)=>filter==='debt'?(b.debt-a.debt||a.memberName.localeCompare(b.memberName)):(a.memberName.localeCompare(b.memberName)));
+    const visibleCountEl=document.getElementById('reportFollowupVisibleCountV86');
+    if(visibleCountEl) visibleCountEl.textContent=String(rows.length);
+    const summaryEl=document.getElementById('reportFollowupFilterSummaryV86');
+    if(summaryEl){
+        const labels={debt:'Wenye Deni',complete:'Waliokamilisha',excess:'Wenye Ziada',all:'Wote'};
+        summaryEl.textContent=labels[filter]||'Wote'+(q?' • Utafutaji unaotumika':'');
+        if(q) summaryEl.textContent+=' • Utafutaji unaotumika';
+    }
+    table.innerHTML=rows.length?rows.map(r=>`<tr class="border-t hover:bg-slate-50"><td class="p-3 font-semibold">${escapeHtml(r.memberName)}</td><td class="p-3 text-right">${r.months}</td><td class="p-3 text-right">${reportMoney(r.due)}</td><td class="p-3 text-right">${reportMoney(r.total)}</td><td class="p-3 text-right font-bold ${r.debt>0?'text-red-600':''}">${reportMoney(r.debt)}</td><td class="p-3 text-center"><button type="button" onclick="openFamilyLedger(${Number(r.member.id)})" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold">Angalia</button></td></tr>`).join(''):'<tr><td colspan="6" class="p-6 text-center text-slate-500">Hakuna mwanafamilia anayelingana na kichujio hiki.</td></tr>';
+}
+
+function clearContributionFollowupSearchV86(){
+    const input=document.getElementById('reportFollowupSearch');
+    if(input) input.value='';
+    filterContributionFollowup();
+    input?.focus();
+}
+
+function exportContributionFollowupCsv(){
+    const q=String(document.getElementById('reportFollowupSearch')?.value||'').trim().toLowerCase();
+    const filter=window.currentContributionFollowupFilterV79||'debt';
+    const allRows=window.currentContributionFollowupAllRowsV79||window.currentContributionFollowupRows||[];
+    const rows=allRows.filter(r=>{
+        const status=filter==='debt'?(Number(r.debt)>0):filter==='complete'?(Number(r.debt)<=0):filter==='excess'?(Number(r.excess)>0):true;
+        return status && (!q||String(r.memberName||'').toLowerCase().includes(q));
+    }).sort((a,b)=>filter==='debt'?(b.debt-a.debt||a.memberName.localeCompare(b.memberName)):(a.memberName.localeCompare(b.memberName)));
+    if(!rows.length){alert('Hakuna wanafamilia wanaoendana na kichujio hiki.');return;}
+    const filterLabel={debt:'Wenye Deni',complete:'Waliokamilisha',excess:'Wenye Ziada',all:'Wote'}[filter]||'Wote';
+    const esc=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+    const lines=[['RIPOTI YA UFUATILIAJI WA MCHANGO'],['Kichujio',filterLabel],['Utafutaji',q||'Wote'],[],['Mwanafamilia','Miezi','Wajibu','Alicholipa','Deni','Ziada','Makato','Salio']];
+    rows.forEach(r=>lines.push([r.memberName,r.months,r.due,r.total,r.debt,r.excess,r.deducted,r.availableBalance]));
+    const csv='\ufeff'+lines.map(row=>row.map(esc).join(',')).join('\n');
+    downloadTextFile(csv,'wafuatiliaji-wa-mchango.csv','text/csv;charset=utf-8');
+}
+
+function printContributionFollowupV84(){
+    const q=String(document.getElementById('reportFollowupSearch')?.value||'').trim().toLowerCase();
+    const filter=window.currentContributionFollowupFilterV79||'debt';
+    const allRows=window.currentContributionFollowupAllRowsV79||window.currentContributionFollowupRows||[];
+    const rows=allRows.filter(r=>{
+        const status=filter==='debt'?(Number(r.debt)>0):filter==='complete'?(Number(r.debt)<=0):filter==='excess'?(Number(r.excess)>0):true;
+        return status && (!q||String(r.memberName||'').toLowerCase().includes(q));
+    }).sort((a,b)=>filter==='debt'?(b.debt-a.debt||a.memberName.localeCompare(b.memberName)):(a.memberName.localeCompare(b.memberName)));
+    if(!rows.length){alert('Hakuna wanafamilia wanaoendana na kichujio hiki.');return;}
+    const filterLabel={debt:'Wenye Deni',complete:'Waliokamilisha',excess:'Wenye Ziada',all:'Wote'}[filter]||'Wote';
+    const totalDebt=rows.reduce((sum,r)=>sum+Math.max(0,Number(r.debt)||0),0);
+    const win=window.open('','_blank','width=1100,height=800');
+    if(!win){alert('Imeshindikana kufungua dirisha la kuchapisha. Ruhusu pop-up kisha jaribu tena.');return;}
+    win.document.write(`<!doctype html><html lang="sw"><head><meta charset="utf-8"><title>Ufuatiliaji wa Michango</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111}h1{font-size:20px;margin:0 0 6px}p{margin:4px 0;color:#555;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:18px;font-size:12px}th,td{border:1px solid #ddd;padding:7px}th{background:#f1f5f9;text-align:left}td.num,th.num{text-align:right}.summary{display:flex;gap:18px;margin-top:14px;font-size:12px} @media print{body{padding:0}}</style></head><body><h1>Wanaohitaji Ufuatiliaji wa Mchango</h1><p>Kichujio: ${escapeHtml(filterLabel)}${q?` | Utafutaji: ${escapeHtml(q)}`:''}</p><p>Imetolewa: ${new Date().toLocaleString('sw-TZ')}</p><div class="summary"><b>Wanafamilia: ${rows.length}</b><b>Jumla ya Deni: ${reportMoney(totalDebt)}</b></div><table><thead><tr><th>Mwanafamilia</th><th class="num">Miezi</th><th class="num">Wajibu</th><th class="num">Alicholipa</th><th class="num">Deni</th><th class="num">Ziada</th><th class="num">Makato</th><th class="num">Salio</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${escapeHtml(r.memberName)}</td><td class="num">${r.months}</td><td class="num">${reportMoney(r.due)}</td><td class="num">${reportMoney(r.total)}</td><td class="num">${reportMoney(r.debt)}</td><td class="num">${reportMoney(r.excess)}</td><td class="num">${reportMoney(r.deducted)}</td><td class="num">${reportMoney(r.availableBalance)}</td></tr>`).join('')}</tbody></table></body></html>`);
+    win.document.close();win.focus();setTimeout(()=>win.print(),300);
+}
+
 async function loadReports(){
+  const refreshV78=document.getElementById('reportRefreshV78'); if(refreshV78) refreshV78.textContent='Inasasishwa…';
+
     ensureClient();
 
     const summary=document.getElementById('reportSummary');
     const familyBox=document.getElementById('reportFamilyBreakdown');
     const contribBox=document.getElementById('reportContributionBreakdown');
+    const genderBox=document.getElementById('reportGenderBreakdown');
     const monthlyBox=document.getElementById('reportMonthlyBreakdown');
     const paymentBox=document.getElementById('reportPaymentBreakdown');
     const topBox=document.getElementById('reportTopContributors');
     const table=document.getElementById('reportContributionTable');
 
     if(summary) summary.innerHTML='<div class="bg-white rounded-xl shadow p-5 sm:col-span-2 lg:col-span-5">Inachanganua taarifa...</div>';
-    [familyBox,contribBox,monthlyBox,paymentBox,topBox].forEach(el=>{if(el)el.innerHTML='<p class="text-slate-500 text-sm">Inapakia...</p>';});
+    [familyBox,genderBox,contribBox,monthlyBox,paymentBox,topBox].forEach(el=>{if(el)el.innerHTML='<p class="text-slate-500 text-sm">Inapakia...</p>';});
     if(table) table.innerHTML='<tr><td colspan="5" class="p-6 text-center text-slate-500">Inapakia...</td></tr>';
 
     try{
@@ -2278,7 +2837,7 @@ async function loadReports(){
         if(from && to && from>to) throw new Error('Tarehe ya "Kuanzia" haiwezi kuwa baada ya tarehe ya "Hadi".');
 
         let cq=supabaseClient.from('contributions')
-            .select('id,receipt_number,contribution_date,first_name,middle_name,last_name,phone,contributor_type,amount,payment_method,transaction_reference,is_deleted,created_at')
+            .select('id,receipt_number,contribution_date,family_member_id,first_name,middle_name,last_name,phone,contributor_type,amount,payment_method,transaction_reference,is_deleted,created_at')
             .eq('is_deleted',false)
             .order('contribution_date',{ascending:false})
             .order('id',{ascending:false});
@@ -2307,8 +2866,41 @@ async function loadReports(){
         const total=rows.reduce((a,r)=>a+Number(r.amount||0),0);
         const uniqueContributors=new Set(rows.map(r=>[r.first_name,r.middle_name,r.last_name,r.phone].filter(Boolean).join(' ').trim().toLowerCase()).filter(Boolean)).size;
 
+        // Muhtasari wa utendaji wa kipindi: wajibu huhesabiwa kwa kila mwanafamilia
+        // kulingana na miezi yake halisi ya wajibu, si idadi ya sasa ya wanafamilia
+        // kuzidishwa kwa miezi yote. Hii pia huepusha michango ya watu wa nje
+        // kuonekana kama imekidhi wajibu wa wanafamilia.
+        const selectedFrom=from || (rows.length ? rows.map(r=>r.contribution_date).filter(Boolean).sort()[0] : '');
+        const selectedTo=to || (rows.length ? rows.map(r=>r.contribution_date).filter(Boolean).sort().slice(-1)[0] : '');
+        const selectedStartKey=selectedFrom ? String(selectedFrom).slice(0,7) : '';
+        const selectedEndKey=selectedTo ? String(selectedTo).slice(0,7) : '';
+        const familyPeriodRows=rows.filter(r=>String(r.contributor_type||'')==='Mwanafamilia');
+        const familyPeriodTotal=familyPeriodRows.reduce((a,r)=>a+Math.max(0,Number(r.amount||0)),0);
+        let periodDue=0;
+        if(selectedStartKey && selectedEndKey){
+            const periodMonths=new Set(monthKeysBetween(selectedStartKey,selectedEndKey));
+            periodDue=members.reduce((sum,member)=>{
+                const memberMonths=getContributionMonths(member);
+                const eligibleMonths=memberMonths.filter(m=>periodMonths.has(m.key)).length;
+                return sum+(eligibleMonths*FAMILY_MONTHLY_CONTRIBUTION);
+            },0);
+        }
+        const collectionRate=periodDue>0 ? Math.min(100,Math.round((familyPeriodTotal/periodDue)*100)) : 0;
+        const periodGap=Math.max(periodDue-familyPeriodTotal,0);
+        const averageContribution=familyPeriodRows.length ? familyPeriodTotal/familyPeriodRows.length : 0;
+        const rateEl=document.getElementById('reportCollectionRate');
+        const insightBox=document.getElementById('reportPeriodInsights');
+        if(rateEl) rateEl.textContent=collectionRate+'%';
+        if(insightBox) insightBox.innerHTML=[
+            ['Wajibu wa kipindi',reportMoney(periodDue)],
+            ['Kiasi kilichokusanywa',reportMoney(familyPeriodTotal)],
+            ['Bado hakijakusanywa',reportMoney(periodGap)],
+            ['Wastani kwa muamala',reportMoney(averageContribution)],
+            ['Wachangiaji tofauti',uniqueContributors]
+        ].map(([label,value])=>`<div class="rounded-xl bg-slate-50 p-4"><div class="text-xs text-slate-500">${label}</div><div class="font-bold text-lg mt-1">${value}</div></div>`).join('');
+
         window.currentReportRows=rows;
-        window.currentReportMeta={from,to,members:members.length,active:activeMembers.length,total};
+        window.currentReportMeta={from,to,members:members.length,active:activeMembers.length,total,familyPeriodTotal,periodDue};
 
         // Ledger ya Hali ya Mchango ni hali ya sasa ya kila mwanafamilia:
         // - Wajibu unaanzia September 2026 (au mwezi wa kujiunga ikiwa amejiunga baada ya hapo)
@@ -2360,6 +2952,42 @@ async function loadReports(){
         };
         window.currentReportLedgerRows=reportLedgerRows;
         window.currentReportLedgerSummary=ledgerSummary;
+
+    // Muhtasari wa mwezi wa sasa: hutumia wajibu wa mwezi huu na malipo ya mwezi huu pekee.
+    try{
+        const now=new Date();
+        const currentKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        const currentLabel=now.toLocaleDateString('sw-TZ',{month:'long',year:'numeric'});
+        const activeMembers=Array.isArray(familyMembers)?familyMembers.filter(m=>String(m.status||'').toLowerCase()!=='inactive'):[];
+        const eligible=activeMembers.filter(m=>{
+            const joined=String(m.join_date||m.created_at||'').slice(0,7);
+            return !joined || joined<=currentKey;
+        });
+        const due=eligible.length*Number(FAMILY_MONTHLY_CONTRIBUTION||10000);
+        const currentRows=Array.isArray(contributions)?contributions.filter(r=>String(r.contribution_date||'').slice(0,7)===currentKey && !r.is_deleted):[];
+        const paid=currentRows.reduce((sum,r)=>sum+Number(r.amount||0),0);
+        const payers=new Set(currentRows.map(r=>r.family_member_id||r.member_id||r.contributor_id).filter(Boolean));
+        const outstanding=Math.max(0,due-paid);
+        const setText=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+        setText('currentMonthContributionLabel',currentLabel);
+        setText('currentMonthDue',reportMoney(due));
+        setText('currentMonthPaid',reportMoney(paid));
+        setText('currentMonthPayers',String(payers.size));
+        setText('currentMonthOutstanding',reportMoney(outstanding));
+    }catch(summaryError){ console.warn('Current month summary error:',summaryError); }
+        const responsibilityComplete=reportLedgerRows.filter(r=>r.debt<=0).length;
+        const responsibilityDebtors=reportLedgerRows.filter(r=>r.debt>0).length;
+        const responsibilityRate=reportLedgerRows.length?Math.round((responsibilityComplete/reportLedgerRows.length)*100):0;
+        const responsibilityRateEl=document.getElementById('reportContributionResponsibilityRate');
+        const responsibilityBar=document.getElementById('reportContributionResponsibilityBar');
+        const responsibilityCompleteEl=document.getElementById('reportResponsibilityComplete');
+        const responsibilityDebtorsEl=document.getElementById('reportResponsibilityDebtors');
+        const responsibilityDebtEl=document.getElementById('reportResponsibilityDebt');
+        if(responsibilityRateEl) responsibilityRateEl.textContent=responsibilityRate+'%';
+        if(responsibilityBar) responsibilityBar.style.width=responsibilityRate+'%';
+        if(responsibilityCompleteEl) responsibilityCompleteEl.textContent=responsibilityComplete;
+        if(responsibilityDebtorsEl) responsibilityDebtorsEl.textContent=responsibilityDebtors;
+        if(responsibilityDebtEl) responsibilityDebtEl.textContent=reportMoney(ledgerSummary.debt);
         const ledgerSummaryBox=document.getElementById('reportContributionLedgerSummary');
         if(ledgerSummaryBox) ledgerSummaryBox.innerHTML=[
             ['Wajibu',ledgerSummary.due],
@@ -2374,6 +3002,11 @@ async function loadReports(){
             const sortedLedger=[...reportLedgerRows].sort((a,b)=>b.debt-a.debt || b.excess-a.excess || a.memberName.localeCompare(b.memberName));
             ledgerTable.innerHTML=sortedLedger.length?sortedLedger.map(r=>`<tr class="border-t"><td class="p-3"><button type="button" onclick="openFamilyLedger(${Number(r.member.id)})" class="text-left font-semibold text-blue-700 hover:underline">${escapeHtml(r.memberName)}</button></td><td class="p-3 text-right">${r.months}</td><td class="p-3 text-right">${reportMoney(r.due)}</td><td class="p-3 text-right font-semibold">${reportMoney(r.total)}</td><td class="p-3 text-right font-semibold ${r.debt>0?'text-red-600':''}">${reportMoney(r.debt)}</td><td class="p-3 text-right font-semibold ${r.excess>0?'text-green-700':''}">${reportMoney(r.excess)}</td><td class="p-3 text-right">${reportMoney(r.deducted)}</td><td class="p-3 text-right font-bold text-blue-700">${reportMoney(r.availableBalance)}</td></tr>`).join(''):'<tr><td colspan="8" class="p-6 text-center text-slate-500">Hakuna wanafamilia.</td></tr>';
         }
+        window.currentContributionFollowupAllRowsV79=[...reportLedgerRows];
+        window.currentContributionFollowupRows=[...reportLedgerRows].filter(r=>r.debt>0).sort((a,b)=>b.debt-a.debt || a.memberName.localeCompare(b.memberName));
+        const followupCountEl=document.getElementById('reportFollowupCount');
+        if(followupCountEl) followupCountEl.textContent=window.currentContributionFollowupRows.length+' wenye deni';
+        filterContributionFollowup();
 
         if(summary) summary.innerHTML=[
             ['Wanafamilia wote',members.length],
@@ -2390,6 +3023,22 @@ async function loadReports(){
         const status=[['Walio hai',aliveCount,'text-emerald-700'],['Amefariki',deceasedCount,'text-slate-700'],['Hajaainishwa',unclassifiedCount,'text-amber-700']];
         if(familyBox) familyBox.innerHTML=status
             .map(([k,v,c])=>`<div class="flex items-center justify-between border-b last:border-0 pb-3 mb-3"><span class="${c}">${escapeHtml(k)}</span><b class="text-xl">${v}</b></div>`).join('') || '<p class="text-slate-500 text-sm">Hakuna taarifa za wanafamilia.</p>';
+
+        // Muhtasari wa jinsia. Database ya mfumo hutumia Me/Ke; majina mengine yanakubalika bila kuharibu data.
+        const normalizeReportGender=(value)=>{
+            const g=String(value??'').trim().toLowerCase();
+            if(['me','m','male','mwanaume','kiume'].includes(g)) return 'Me';
+            if(['ke','f','female','mwanamke','kike'].includes(g)) return 'Ke';
+            return '';
+        };
+        const maleCount=members.filter(m=>normalizeReportGender(m.gender)==='Me').length;
+        const femaleCount=members.filter(m=>normalizeReportGender(m.gender)==='Ke').length;
+        const genderUnknown=Math.max(0,members.length-maleCount-femaleCount);
+        if(genderBox) genderBox.innerHTML=[
+            ['Wanaume (Me)',maleCount,'text-blue-700'],
+            ['Wanawake (Ke)',femaleCount,'text-pink-700'],
+            ['Haijaainishwa',genderUnknown,'text-amber-700']
+        ].map(([k,v,c])=>`<div class="flex items-center justify-between border-b last:border-0 pb-3 mb-3"><span class="${c}">${escapeHtml(k)}</span><b class="text-xl">${v}</b></div>`).join('') || '<p class="text-slate-500 text-sm">Hakuna taarifa za jinsia.</p>';
 
         // Muhtasari wa aina ya wachangiaji.
         const types={};
@@ -2420,19 +3069,54 @@ async function loadReports(){
         if(topBox) topBox.innerHTML=Object.values(people).sort((a,b)=>b.amount-a.amount).slice(0,10)
             .map((x,i)=>`<div class="flex items-center justify-between gap-3 border-b last:border-0 pb-2 mb-2"><span><b>${i+1}. ${escapeHtml(x.name)}</b><span class="block text-xs text-slate-500">${x.count} ${x.count===1?'mchango':'michango'}${x.phone?' • '+escapeHtml(x.phone):''}</span></span><b>${reportMoney(x.amount)}</b></div>`).join('') || '<p class="text-slate-500 text-sm">Hakuna wachangiaji katika kipindi hiki.</p>';
 
-        if(table) table.innerHTML=rows.length?rows.map(r=>`<tr class="border-t"><td class="p-3">${escapeHtml(r.contribution_date||'-')}</td><td class="p-3">${escapeHtml(r.receipt_number||'-')}</td><td class="p-3">${escapeHtml([r.first_name,r.middle_name,r.last_name].filter(Boolean).join(' ')||r.phone||'-')}</td><td class="p-3">${escapeHtml(r.contributor_type||'-')}</td><td class="p-3 text-right font-bold">${reportMoney(r.amount)}</td></tr>`).join(''):'<tr><td colspan="5" class="p-6 text-center text-slate-500">Hakuna michango katika kipindi hiki.</td></tr>';
+        if(table) table.innerHTML=rows.length?rows.map(r=>`<tr class="border-t"><td class="p-3">${escapeHtml(formatDisplayDate(r.contribution_date))}</td><td class="p-3">${escapeHtml(r.receipt_number||'-')}</td><td class="p-3">${escapeHtml([r.first_name,r.middle_name,r.last_name].filter(Boolean).join(' ')||r.phone||'-')}</td><td class="p-3">${escapeHtml(r.contributor_type||'-')}</td><td class="p-3 text-right font-bold">${reportMoney(r.amount)}</td></tr>`).join(''):'<tr><td colspan="5" class="p-6 text-center text-slate-500">Hakuna michango katika kipindi hiki.</td></tr>';
 
+        const refreshed=new Date();
+        const refreshText=document.getElementById('reportRefreshV78');
+        if(refreshText) refreshText.textContent='Imesasishwa: '+refreshed.toLocaleString('sw-TZ',{dateStyle:'medium',timeStyle:'short'});
         return rows;
     }catch(error){
         console.error('Reports:',error);
         const msg=escapeHtml(error?.message||'Kosa lisilojulikana.');
         if(summary) summary.innerHTML=`<div class="bg-red-50 text-red-700 rounded-xl p-5 sm:col-span-2 lg:col-span-5">Imeshindikana kupakia ripoti: ${msg}</div>`;
         if(table) table.innerHTML=`<tr><td colspan="5" class="p-6 text-center text-red-600">Imeshindikana kupakia ripoti: ${msg}</td></tr>`;
-        [familyBox,contribBox,monthlyBox,paymentBox,topBox].forEach(el=>{if(el)el.innerHTML='<p class="text-red-600 text-sm">Hakuna taarifa kwa sasa.</p>';});
+        [familyBox,genderBox,contribBox,monthlyBox,paymentBox,topBox].forEach(el=>{if(el)el.innerHTML='<p class="text-red-600 text-sm">Hakuna taarifa kwa sasa.</p>';});
         return [];
     }
 }
 
+
+function formatReportDateInput(date){
+    const y=date.getFullYear();
+    const m=String(date.getMonth()+1).padStart(2,'0');
+    const d=String(date.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+}
+
+async function setReportQuickFilter(type){
+    const from=document.getElementById('reportFrom');
+    const to=document.getElementById('reportTo');
+    if(!from || !to) return;
+    const today=new Date();
+    const end=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    let start=new Date(end);
+    if(type==='week'){
+        const day=end.getDay();
+        const daysSinceMonday=(day+6)%7;
+        start.setDate(end.getDate()-daysSinceMonday);
+    }else if(type==='month'){
+        start=new Date(end.getFullYear(),end.getMonth(),1);
+    }else if(type==='quarter'){
+        start=new Date(end.getFullYear(),end.getMonth()-2,1);
+    }else if(type==='year'){
+        start=new Date(end.getFullYear(),0,1);
+    }else{
+        return;
+    }
+    from.value=formatReportDateInput(start);
+    to.value=formatReportDateInput(end);
+    await loadReports();
+}
 
 async function clearReportFilters(){
     const from=document.getElementById('reportFrom');
@@ -2456,11 +3140,12 @@ async function printReport(){
     const ledgerRows=Array.isArray(window.currentReportLedgerRows)?window.currentReportLedgerRows:[];
     const ledgerSummary=window.currentReportLedgerSummary||{};
     const ledgerHtml=ledgerRows.length?ledgerRows.map(r=>`<tr><td>${escapeHtml(r.memberName||'-')}</td><td class="num">${r.months||0}</td><td class="money">${reportMoney(r.due)}</td><td class="money">${reportMoney(r.total)}</td><td class="money">${reportMoney(r.debt)}</td><td class="money">${reportMoney(r.excess)}</td><td class="money">${reportMoney(r.deducted)}</td><td class="money">${reportMoney(r.availableBalance)}</td></tr>`).join(''):'<tr><td colspan="8">Hakuna wanafamilia.</td></tr>';
-    win.document.write(`<!doctype html><html lang="sw"><head><meta charset="utf-8"><title>Ripoti ya Mo'Nyakorema O'Rila</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#111}h1{margin-bottom:4px}p{color:#555}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.card{border:1px solid #ddd;border-radius:8px;padding:12px}.label{font-size:12px;color:#666}.value{font-size:20px;font-weight:bold;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:14px}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:12px}th{background:#f1f5f9}.money,.num{text-align:right;font-weight:bold}.section{margin-top:28px}.note{font-size:11px;color:#666}@media print{button{display:none}.section{break-inside:avoid}}</style></head><body><h1>Familia ya Mo'Nyakorema O'Rila</h1><p>Ripoti na Uchambuzi • Kipindi: ${escapeHtml(period)}</p><div class="cards"><div class="card"><div class="label">Wanafamilia wote</div><div class="value">${meta.members||0}</div></div><div class="card"><div class="label">Wanafamilia hai</div><div class="value">${meta.active||0}</div></div><div class="card"><div class="label">Idadi ya michango</div><div class="value">${rows.length}</div></div><div class="card"><div class="label">Jumla ya michango ya kipindi</div><div class="value">${reportMoney(meta.total||0)}</div></div></div><div class="section"><h2>Hali ya Mchango ya Wanafamilia</h2><table><thead><tr><th>Mwanafamilia</th><th>Miezi ya kuchangia</th><th>Wajibu</th><th>Kiasi alichochanga</th><th>Kiasi anachodaiwa</th><th>Ziada</th><th>Makato</th><th>Salio</th></tr></thead><tbody>${ledgerHtml}</tbody><tfoot><tr><th colspan="2">Jumla</th><th class="money">${reportMoney(ledgerSummary.due||0)}</th><th class="money">${reportMoney(ledgerSummary.total||0)}</th><th class="money">${reportMoney(ledgerSummary.debt||0)}</th><th class="money">${reportMoney(ledgerSummary.excess||0)}</th><th class="money">${reportMoney(ledgerSummary.deducted||0)}</th><th class="money">${reportMoney(ledgerSummary.available||0)}</th></tr></tfoot></table><p class="note">Ledger hii inaonyesha hali ya mchango hadi mwezi wa sasa, kuanzia September 2026; vichujio vya ripoti havibadilishi wajibu wa mwezi wa sasa.</p></div><div class="section"><h2>Muhtasari wa Aina za Wachangiaji</h2><table><thead><tr><th>Aina</th><th>Kiasi</th></tr></thead><tbody>${typeSummary||'<tr><td colspan="2">Hakuna data</td></tr>'}</tbody></table></div><div class="section"><h2>Michango ya Kipindi</h2><table><thead><tr><th>Tarehe</th><th>Risiti</th><th>Mchangiaji</th><th>Aina</th><th>Kiasi</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${escapeHtml(r.contribution_date||'-')}</td><td>${escapeHtml(r.receipt_number||'-')}</td><td>${escapeHtml(fullName(r)||r.phone||'-')}</td><td>${escapeHtml(r.contributor_type||'-')}</td><td class="money">${reportMoney(r.amount)}</td></tr>`).join('')||'<tr><td colspan="5">Hakuna michango katika kipindi hiki.</td></tr>'}</tbody></table></div><p class="note" style="margin-top:30px">Imetolewa kutoka kwenye mfumo wa Familia ya Mo'Nyakorema O'Rila.</p></body></html>`);
+    win.document.write(`<!doctype html><html lang="sw"><head><meta charset="utf-8"><title>Ripoti ya Mo'Nyakorema O'Rila</title><style>body{font-family:Arial,sans-serif;padding:28px;color:#111}h1{margin-bottom:4px}p{color:#555}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.card{border:1px solid #ddd;border-radius:8px;padding:12px}.label{font-size:12px;color:#666}.value{font-size:20px;font-weight:bold;margin-top:5px}table{width:100%;border-collapse:collapse;margin-top:14px}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:12px}th{background:#f1f5f9}.money,.num{text-align:right;font-weight:bold}.section{margin-top:28px}.note{font-size:11px;color:#666}@media print{button{display:none}.section{break-inside:avoid}}</style></head><body><h1>Familia ya Mo'Nyakorema O'Rila</h1><p>Ripoti na Uchambuzi • Kipindi: ${escapeHtml(period)}</p><div class="cards"><div class="card"><div class="label">Wanafamilia wote</div><div class="value">${meta.members||0}</div></div><div class="card"><div class="label">Wanafamilia hai</div><div class="value">${meta.active||0}</div></div><div class="card"><div class="label">Idadi ya michango</div><div class="value">${rows.length}</div></div><div class="card"><div class="label">Jumla ya michango ya kipindi</div><div class="value">${reportMoney(meta.total||0)}</div></div></div><div class="section"><h2>Hali ya Mchango ya Wanafamilia</h2><table><thead><tr><th>Mwanafamilia</th><th>Miezi ya kuchangia</th><th>Wajibu</th><th>Kiasi alichochanga</th><th>Kiasi anachodaiwa</th><th>Ziada</th><th>Makato</th><th>Salio</th></tr></thead><tbody>${ledgerHtml}</tbody><tfoot><tr><th colspan="2">Jumla</th><th class="money">${reportMoney(ledgerSummary.due||0)}</th><th class="money">${reportMoney(ledgerSummary.total||0)}</th><th class="money">${reportMoney(ledgerSummary.debt||0)}</th><th class="money">${reportMoney(ledgerSummary.excess||0)}</th><th class="money">${reportMoney(ledgerSummary.deducted||0)}</th><th class="money">${reportMoney(ledgerSummary.available||0)}</th></tr></tfoot></table><p class="note">Ledger hii inaonyesha hali ya mchango hadi mwezi wa sasa, kuanzia September 2026; vichujio vya ripoti havibadilishi wajibu wa mwezi wa sasa.</p></div><div class="section"><h2>Muhtasari wa Aina za Wachangiaji</h2><table><thead><tr><th>Aina</th><th>Kiasi</th></tr></thead><tbody>${typeSummary||'<tr><td colspan="2">Hakuna data</td></tr>'}</tbody></table></div><div class="section"><h2>Michango ya Kipindi</h2><table><thead><tr><th>Tarehe</th><th>Risiti</th><th>Mchangiaji</th><th>Aina</th><th>Kiasi</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${escapeHtml(formatDisplayDate(r.contribution_date))}</td><td>${escapeHtml(r.receipt_number||'-')}</td><td>${escapeHtml(fullName(r)||r.phone||'-')}</td><td>${escapeHtml(r.contributor_type||'-')}</td><td class="money">${reportMoney(r.amount)}</td></tr>`).join('')||'<tr><td colspan="5">Hakuna michango katika kipindi hiki.</td></tr>'}</tbody></table></div><p class="note" style="margin-top:30px">Imetolewa kutoka kwenye mfumo wa Familia ya Mo'Nyakorema O'Rila.</p></body></html>`);
     win.document.close();
     win.focus();
     setTimeout(()=>win.print(),300);
 }
+
 
 async function exportReportCSV(){
     // Always reload using the current date filters so CSV cannot use stale data.
@@ -2549,7 +3234,7 @@ function renderContributions(list=contributions){
         return `
         <tr class="border-t">
           <td class="p-3 font-semibold">${escapeHtml(row.receipt_number||"-")}</td>
-          <td class="p-3">${escapeHtml(row.contribution_date||"-")}</td>
+          <td class="p-3">${escapeHtml(formatDisplayDate(row.contribution_date))}</td>
           <td class="p-3">${escapeHtml(contributor)}</td>
           <td class="p-3">${escapeHtml(row.contributor_type||"-")}</td>
           <td class="p-3 text-right font-bold">TZS ${money(row.amount)}</td>
@@ -2563,6 +3248,12 @@ function renderContributions(list=contributions){
           </td>
         </tr>`;
     }).join("");
+}
+
+function clearContributionSearch(){
+    const input=document.getElementById("contributionSearch");
+    if(input) input.value="";
+    filterContributions();
 }
 
 function filterContributions(){
@@ -2693,6 +3384,10 @@ async function saveContribution(){
     }
 
     const editId=document.getElementById("contributionEditId").value.trim();
+    if(editId && !["Administrator","Mhasibu"].includes(currentProfile?.role)){
+        alert("Mwenyekiti anaweza kurekodi mchango mpya, lakini hana ruhusa ya kuhariri mchango uliokwisha rekodiwa.");
+        return;
+    }
     const type=document.getElementById("contributorType").value;
     if(type==="Mwanafamilia"){
         const memberId=document.getElementById("contributionFamilyMember").value;
@@ -2826,7 +3521,7 @@ h1{text-align:center}
 <h1>Mo'Nyakorema O'Rila</h1>
 <p style="text-align:center">RISITI YA MCHANGO</p>
 <div class="row"><strong>Risiti</strong><span>${escapeHtml(row.receipt_number||"-")}</span></div>
-<div class="row"><strong>Tarehe</strong><span>${escapeHtml(row.contribution_date||"-")}</span></div>
+<div class="row"><strong>Tarehe</strong><span>${escapeHtml(formatDisplayDate(row.contribution_date))}</span></div>
 <div class="row"><strong>Mchangiaji</strong><span>${escapeHtml(name||"-")}</span></div>
 <div class="row"><strong>Simu</strong><span>${escapeHtml(row.phone||"-")}</span></div>
 <div class="row"><strong>Aina</strong><span>${escapeHtml(row.contributor_type||"-")}</span></div>
@@ -2930,16 +3625,39 @@ async function loadUsers(){
     renderUsers();
 }
 
+function clearUsersFilters(){
+    const search=document.getElementById("usersSearch");
+    const role=document.getElementById("usersRoleFilter");
+    if(search) search.value="";
+    if(role) role.value="";
+    renderUsers();
+}
+
 function renderUsers(){
     const table=document.getElementById("usersTable");
     if(!table) return;
-
-    if(!users.length){
+    const q=(document.getElementById("usersSearch")?.value||"").trim().toLowerCase();
+    const roleFilter=document.getElementById("usersRoleFilter")?.value||"";
+    const total=users.length;
+    const activeCount=users.filter(u=>u.is_active===true).length;
+    const inactiveCount=users.filter(u=>u.is_active!==true).length;
+    const adminCount=users.filter(u=>u.role==="Administrator"&&u.is_active===true).length;
+    document.getElementById("usersTotalCount")?.replaceChildren(document.createTextNode(String(total)));
+    document.getElementById("usersActiveCount")?.replaceChildren(document.createTextNode(String(activeCount)));
+    document.getElementById("usersInactiveCount")?.replaceChildren(document.createTextNode(String(inactiveCount)));
+    document.getElementById("usersAdminCount")?.replaceChildren(document.createTextNode(String(adminCount)));
+    const filtered=users.filter(user=>{
+        const hay=[fullName(user),user.phone,user.role].filter(Boolean).join(" ").toLowerCase();
+        return (!q||hay.includes(q))&&(!roleFilter||user.role===roleFilter);
+    });
+    const summary=document.getElementById("usersResultSummary");
+    if(summary) summary.textContent=`Inaonyesha ${filtered.length} kati ya ${total} watumiaji.`;
+    if(!filtered.length){
         table.innerHTML=`<tr><td colspan="5" class="p-6 text-center text-slate-500">Hakuna watumiaji.</td></tr>`;
         return;
     }
 
-    table.innerHTML=users.map(user=>{
+    table.innerHTML=filtered.map(user=>{
         const name=fullName(user)||"Bila jina";
         const active=user.is_active===true;
         const self=String(user.id)===String(currentUser?.id);
@@ -3592,6 +4310,11 @@ window.addEventListener("DOMContentLoaded",()=>{
 
     checkExistingSession();
 });
+
+function scrollToFollowupV85(){
+  const el=document.getElementById('reportFollowupTable');
+  if(el) el.closest('.bg-white')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
 </script>
 
 </body>
